@@ -1,9 +1,19 @@
 package dk.unf.MauMau;
 
 import android.app.Activity;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.text.format.Formatter;
+import dk.unf.MauMau.network.Client;
+import dk.unf.MauMau.network.NetPkg;
+import dk.unf.MauMau.network.Server;
 
 public class MainActivity extends Activity {
+
+    private Client client;
+    private Server server;
+
     /**
      * Called when the activity is first created.
      */
@@ -13,5 +23,50 @@ public class MainActivity extends Activity {
         BoardCanvas boardCanvas = new BoardCanvas(this);
         setContentView(boardCanvas);
 
+        WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        int ip = wifiInfo.getIpAddress();
+        String ipAdress = Formatter.formatIpAddress(ip);
+        System.out.println(ipAdress);
+
+
+        //True for server , false for client
+        if (false) {
+            server = new Server(ipAdress);
+            new Thread(server).start();
+        } else {
+            client = new Client();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    client.connect();
+                    while (client.isConnected()) {
+                        client.tick();
+                        try {
+                            java.lang.Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }).start();
+            NetPkg pkg = new NetPkg();
+            pkg.addString("Ello Server!");
+            client.send(pkg);
+
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (client != null) {
+            client.close();
+        }
+
+        if (server != null) {
+            server.close();
+        }
     }
 }
