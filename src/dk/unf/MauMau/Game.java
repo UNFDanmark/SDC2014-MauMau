@@ -1,8 +1,6 @@
 package dk.unf.MauMau;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Created by sdc on 7/15/14.
@@ -10,10 +8,27 @@ import java.util.Stack;
 public class Game {
     Stack<Card> deck = new Stack<Card>();
     Stack<Card> playedCards = new Stack<Card>();
+    ArrayList<Card> cardsToGive = new ArrayList<Card>();
+    Queue<Player> players = new PriorityQueue<Player>();
 
-    public Game(Stack deck, Stack<Card> playedCards) {
+    public Queue<Player> getPlayers() {
+        return players;
+    }
+
+    public Game() {
         this.deck = deck;
         this.playedCards = playedCards;
+        this.players = players;
+        this.cardsToGive = cardsToGive;
+
+        for(int i = 0; i < 8; i++){
+            deck.push(new Card(i, 'd', 0));
+        }
+        for(int i = 0; i < 5; i++){
+            cardsToGive.add(deck.pop());
+        }
+        players.add(new Player(cardsToGive));
+
     }
 
     public void giveCard(Player player) {

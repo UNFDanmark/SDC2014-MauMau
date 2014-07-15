@@ -8,7 +8,8 @@ public class Card {
     int color;
     int function;
 
-    public Card(int cardValue, int color, int function) {
+
+    public Card(int cardValue, char color, int function) {
         this.cardValue = cardValue;
         this.color = color;
         this.function = function;
