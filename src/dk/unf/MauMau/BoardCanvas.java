@@ -14,13 +14,26 @@ public class BoardCanvas extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         paint.setColor(Color.RED);
-        Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.card);
-        canvas.drawBitmap(b, 0, 0, null);
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.card);
+        bm = scaleDown(bm, 200, true);
+        canvas.drawBitmap(bm, 0, 0, null);
     }
 
     public BoardCanvas(Context context) {
         super(context);
 
 
+    }
+    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
+                                   boolean filter) {
+        float ratio = Math.min(
+                (float) maxImageSize / realImage.getWidth(),
+                (float) maxImageSize / realImage.getHeight());
+        int width = Math.round((float) ratio * realImage.getWidth());
+        int height = Math.round((float) ratio * realImage.getHeight());
+
+        Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width,
+                height, filter);
+        return newBitmap;
     }
 }
