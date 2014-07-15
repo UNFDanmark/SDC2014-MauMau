@@ -9,4 +9,7 @@ import java.util.Stack;
 public class Player {
     ArrayList<Card> cards = new ArrayList<Card>();
 
+    public Player(ArrayList<Card> cards) {
+        this.cards = cards;
+    }
 }
