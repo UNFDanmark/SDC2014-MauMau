@@ -5,6 +5,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.text.format.Formatter;
+import android.util.Log;
 import dk.unf.MauMau.network.Client;
 import dk.unf.MauMau.network.NetPkg;
 import dk.unf.MauMau.network.Server;
@@ -27,10 +28,10 @@ public class MainActivity extends Activity {
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         int ip = wifiInfo.getIpAddress();
         String ipAdress = Formatter.formatIpAddress(ip);
-        System.out.println(ipAdress);
+        Log.i("Mau", ipAdress);
 
 
-        //True for server , false for client
+                //True for server , false for client
         if (false) {
             server = new Server(ipAdress);
             new Thread(server).start();

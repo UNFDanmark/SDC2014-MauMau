@@ -1,5 +1,7 @@
 package dk.unf.MauMau.network;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -30,14 +32,14 @@ public class Server implements Runnable {
             socket.bind(address);
 
             while (running) {
-                System.out.println("Waiting for new connection");
+                Log.i("Mau","Waiting for new connection");
                 ServerThread thread = new ServerThread(socket.accept());
                 new Thread(thread).start();
                 threads.add(thread);
             }
 
         } catch (IOException e) {
-            System.out.println("Unable to open server channel");
+            Log.e("Mau","Unable to open server channel");
             e.printStackTrace();
         }
     }
@@ -54,6 +56,11 @@ public class Server implements Runnable {
         for (ServerThread thread : threads) {
             thread.closeSocket();
         }
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private class ServerThread implements Runnable {
@@ -62,7 +69,7 @@ public class Server implements Runnable {
         private boolean running = true;
 
         public ServerThread(Socket socket) {
-            System.out.println("New connection!");
+            Log.i("Mau","New connection!");
             this.socket = socket;
         }
 
@@ -77,7 +84,7 @@ public class Server implements Runnable {
                         String inputLine;
                         while ((inputLine = in.readLine()) != null) {
                             System.out.println("Got msg: " + inputLine);
-                            out.println("Ello:" + inputLine);
+                            Log.i("Mau","Ello:" + inputLine);
                         }
                     }
                     out.println("200");
