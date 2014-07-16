@@ -4,10 +4,7 @@ import android.content.Context;
 import android.graphics.*;
 import android.view.View;
 import dk.unf.MauMau.game.Game;
-import dk.unf.MauMau.ui.AssetLoader;
-import dk.unf.MauMau.ui.GameRender;
-import dk.unf.MauMau.ui.MainMenu;
-import dk.unf.MauMau.ui.UIState;
+import dk.unf.MauMau.ui.*;
 
 /**
  * Created by sdc on 7/15/14.
@@ -31,7 +28,7 @@ public class CanvasManager extends View {
         for (UIState state : states) {
             state.init(this);
         }
-        currentState = states[GAME_STATE];
+        currentState = states[MAIN_MENU_STATE];
         currentState.onEnter();
     }
 
@@ -57,6 +54,10 @@ public class CanvasManager extends View {
 
     public CanvasManager(Context context) {
         super(context);
+    }
+
+    void onTouchEvent(InputEvent event) {
+        currentState.onInputEvent(event);
     }
 
 }

@@ -58,11 +58,18 @@ public class GameRender implements UIState {
         client.send(pkg);*/
     }
 
+    @Override
     public void onEnter() {
 
     }
 
+    @Override
     public void onLeave() {
+
+    }
+
+    @Override
+    public void onInputEvent(InputEvent event) {
 
     }
 

@@ -1,6 +1,7 @@
 package dk.unf.MauMau.ui;
 
 import android.graphics.Canvas;
+import android.util.Log;
 import dk.unf.MauMau.CanvasManager;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ public class MainMenu implements UIState {
     private static final int HEIGHT = 1280;
 
     private static final int BUTTON_WIDTH = 400;
-    private static final int BUTTON_HEIGHT = 250;
+    private static final int BUTTON_HEIGHT = 100;
 
     private static final int TOP_MARGIN = 50;
     private static final int SPACING = 200;
@@ -25,17 +26,20 @@ public class MainMenu implements UIState {
         //All construction code in init()
     }
 
+    @Override
     public void init(final CanvasManager manager) {
         buttons.add(spawnButton("Create game", 0, new OnClickListener() {
             @Override
             public void onClick(Element element) {
-                manager.gotoState(CanvasManager.GAME_STATE);
+                Log.i("Mau", "Clicked on Create Game");
+                //manager.gotoState(CanvasManager.GAME_STATE);
             }
         }));
 
         buttons.add(spawnButton("Join game", 1, new OnClickListener() {
             @Override
             public void onClick(Element element) {
+                Log.i("Mau", "Clicked on Join Game");
                 //manager.gotoState(CanvasManager.JOIN_STATE);
             }
         }));
@@ -43,14 +47,14 @@ public class MainMenu implements UIState {
         buttons.add(spawnButton("Settings", 2, new OnClickListener() {
             @Override
             public void onClick(Element element) {
-
+                Log.i("Mau", "Clicked on Settings");
             }
         }));
 
         buttons.add(spawnButton("Quit", 3, new OnClickListener() {
             @Override
             public void onClick(Element element) {
-
+                Log.i("Mau", "Clicked on Quit");
             }
         }));
     }
@@ -69,6 +73,15 @@ public class MainMenu implements UIState {
     public void draw(Canvas canvas) {
         for (Button button : buttons) {
             button.draw(canvas);
+        }
+    }
+
+    @Override
+    public void onInputEvent(InputEvent event) {
+        if (event.type == InputEvent.DOWN_EVENT) {
+            for (Button button : buttons) {
+                button.tick(event);
+            }
         }
     }
 

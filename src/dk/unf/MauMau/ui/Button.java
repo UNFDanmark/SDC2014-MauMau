@@ -24,6 +24,10 @@ public class Button extends Element {
         paint.setTextSize(42);
     }
 
+    public Button(String text, int y, int height) {
+        super(0,y,0,height);
+    }
+
     public void tick(InputEvent event) {
         if (listener != null && inside(event.x,event.y)) {
             listener.onClick(this);
