@@ -1,7 +1,6 @@
-package dk.unf.MauMau;
+package dk.unf.MauMau.game;
 
 import java.util.ArrayList;
-import java.util.Stack;
 
 /**
  * Created by sdc on 7/15/14.

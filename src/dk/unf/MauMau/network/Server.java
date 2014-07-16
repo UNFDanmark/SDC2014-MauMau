@@ -48,7 +48,7 @@ public class Server implements Runnable {
         running = false;
     }
 
-    public void addListener(ServerListener listener) {
+    public void addListener(NetListener listener) {
 
     }
 

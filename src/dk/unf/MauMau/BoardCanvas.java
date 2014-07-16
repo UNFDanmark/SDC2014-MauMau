@@ -1,16 +1,11 @@
 package dk.unf.MauMau;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.graphics.*;
 import android.view.View;
+import dk.unf.MauMau.game.Game;
 import dk.unf.MauMau.ui.AssetLoader;
 import dk.unf.MauMau.ui.GameRender;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Stack;
 
 /**
  * Created by sdc on 7/15/14.

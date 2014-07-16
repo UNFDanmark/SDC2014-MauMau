@@ -1,4 +1,4 @@
-package dk.unf.MauMau;
+package dk.unf.MauMau.game;
 
 /**
  * Created by sdc on 7/15/14.
