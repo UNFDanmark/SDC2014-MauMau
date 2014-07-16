@@ -5,7 +5,7 @@ package dk.unf.MauMau.network;
  */
 public interface NetListener {
 
-    void recieved(NetPkg data);
+    void received(NetPkg data);
 
     void onTimeout();
 
