@@ -23,7 +23,6 @@ public class GameRender implements UIState {
     List<CardElement> cards = new ArrayList<CardElement>();
     int spacing = 50;
     int cardWidth = Math.round(200 * 0.7106f);
-    int x = WIDTH/2 - (spacing * (5 - 1) + cardWidth)/2;
 
     public GameRender() {
         //All construction code in init()
@@ -31,6 +30,13 @@ public class GameRender implements UIState {
 
     public void init(CanvasManager manager){
         loader = manager.getLoader();
+
+
+        cards.add(new CardElement(0,0,0,0,2,8));
+        cards.add(new CardElement(0,0,0,0,1,10));
+        cards.add(new CardElement(0,0,0,0,3,7));
+        cards.add(new CardElement(0,0,0,0,0,12));
+        cards.add(new CardElement(0,0,0,0,2,6));
         /*
         client = new Client();
         new Thread(new Runnable() {
@@ -61,14 +67,13 @@ public class GameRender implements UIState {
     }
 
     public void draw(Canvas canvas){
+        int x = WIDTH/2 - (spacing * (5 - 1) + cardWidth)/2;
         paint.setColor(Color.RED);
         for(int i = 0; i < cards.size(); i++){
             Bitmap card = loader.getCard(cards.get(i).cardValue, cards.get(i).cardColor);
             System.out.println(cardWidth + " ");
-            canvas.drawBitmap(card, i*spacing+x, HEIGHT-200, null);
+            canvas.drawBitmap(card, i*spacing+x, HEIGHT-400, null);
         }
-
-
 
     }
 }

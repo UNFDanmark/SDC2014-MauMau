@@ -31,7 +31,7 @@ public class CanvasManager extends View {
         for (UIState state : states) {
             state.init(this);
         }
-        currentState = states[MAIN_MENU_STATE];
+        currentState = states[GAME_STATE];
         currentState.onEnter();
     }
 
