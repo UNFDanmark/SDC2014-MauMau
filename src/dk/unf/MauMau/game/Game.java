@@ -2,7 +2,7 @@ package dk.unf.MauMau.game;
 
 import android.util.Log;
 import dk.unf.MauMau.network.NetListener;
-import dk.unf.MauMau.network.NetPkg;
+import dk.unf.MauMau.network.NetPkg.NetPkg;
 import dk.unf.MauMau.network.Server;
 
 import java.util.*;
@@ -13,6 +13,7 @@ import java.util.*;
 public class Game implements Runnable, NetListener {
 
     Server server;
+    private volatile boolean running = true;
 
     Stack<Card> deck = new Stack<Card>();
     Stack<Card> playedCards = new Stack<Card>();
@@ -27,7 +28,9 @@ public class Game implements Runnable, NetListener {
 
     public Game(String ip) {
         server = new Server(ip);
-        new Thread(server).start();
+        Thread serverThread = new Thread(server);
+        serverThread.setName("ServerAcceptThread");
+        serverThread.start();
 
         for(int i = 6; i < 13; i++){
             for(int j = 0; j < 3; j++){
@@ -57,9 +60,9 @@ public class Game implements Runnable, NetListener {
     }
 
     @Override
-    public void received(NetPkg data) {
+    public synchronized void received(NetPkg data) {
         switch (data.getType()) {
-            default: Log.i("Mau", "Received unknown package of type: " + data.getType());
+            default: Log.i("Mau", "Server received unknown package of type: " + data.getType());
         }
     }
 
@@ -70,5 +73,15 @@ public class Game implements Runnable, NetListener {
 
     public void run() {
 
+        while(running) {
+
+        }
+
+        Log.i("Mau","Game dying");
+    }
+
+    public synchronized void stopGame() {
+        running = false;
+        server.close();
     }
 }

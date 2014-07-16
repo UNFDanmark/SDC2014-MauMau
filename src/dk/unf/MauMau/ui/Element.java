@@ -35,7 +35,7 @@ public abstract class Element {
     }
 
     public boolean inside(int u, int v) {
-        return (x > u && x+width < u && y > v && y < v+height);
+        return (x < u && x+width > u && y < v && y+height > v);
     }
 
 }

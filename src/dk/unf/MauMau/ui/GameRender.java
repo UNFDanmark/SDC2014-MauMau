@@ -4,8 +4,12 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 import dk.unf.MauMau.CanvasManager;
+import dk.unf.MauMau.Settings;
 import dk.unf.MauMau.network.Client;
+import dk.unf.MauMau.network.NetListener;
+import dk.unf.MauMau.network.NetPkg.NetPkg;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,11 +17,14 @@ import java.util.List;
 /**
  * Created by sdc on 7/16/14.
  */
-public class GameRender implements UIState {
+public class GameRender implements UIState, NetListener {
     private final int HEIGHT = 1280;
     private final int WIDTH = 720;
 
+    private String serverIP;
+
     private AssetLoader loader;
+    private CanvasManager canvasManager;
     Client client;
     Paint paint = new Paint();
     List<CardElement> cards = new ArrayList<CardElement>();
@@ -30,8 +37,8 @@ public class GameRender implements UIState {
     }
 
     public void init(CanvasManager manager){
+        canvasManager = manager;
         loader = manager.getLoader();
-
 
         cards.add(new CardElement(0,0,0,0,2,8));
         cards.add(new CardElement(0,0,0,0,1,10));
@@ -40,8 +47,20 @@ public class GameRender implements UIState {
         cards.add(new CardElement(0,0,0,0,2,6));
 
         playedCards.add(new CardElement(0,0,0,0,0,12));
-        /*
+
+    }
+
+    @Override
+    public void onEnter() {
+        if (Settings.getRunningHost()) {
+            serverIP = Settings.getIP();
+        } else {
+            serverIP = Settings.getServerIP();
+        }
+
+        
         client = new Client();
+        client.addListener(this);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -56,16 +75,18 @@ public class GameRender implements UIState {
                 }
             }
         }).start();
-        NetPkg pkg = new NetPkg(NetPkg.PKG_CONNECT);
-        pkg.addString("Ello Server!");
-        client.send(pkg);*/
+        //NetPkg pkg = new NetPkg(NetPkg.PKG_CONNECT);
+        //pkg.addString("Ello Server!");
+        //client.send(pkg);
     }
 
-    public void onEnter() {
-
-    }
-
+    @Override
     public void onLeave() {
+        client.close();
+    }
+
+    @Override
+    public void onInputEvent(InputEvent event) {
 
     }
 
@@ -77,6 +98,20 @@ public class GameRender implements UIState {
             System.out.println(cardWidth + " ");
             canvas.drawBitmap(card, i*spacing+x, HEIGHT-400, null);
         }
+
+    }
+
+    @Override
+    public synchronized void received(NetPkg data) {
+        switch (data.getType()) {
+            default: Log.i("Mau", "Client received unknown package of type: " + data.getType());
+        }
+        canvasManager.postInvalidate();
+
+    }
+
+    @Override
+    public synchronized void onTimeout() {
         for (int i = 0; i < 10; i++) { //Show the deck
             canvas.drawBitmap(loader.getFaceDown(), WIDTH / 2 - loader.getFaceDown().getWidth() / 2, 20+i*5, null);
         }

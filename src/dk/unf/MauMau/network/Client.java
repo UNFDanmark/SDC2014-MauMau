@@ -1,7 +1,7 @@
 package dk.unf.MauMau.network;
 
 import android.util.Log;
-import android.widget.Toast;
+import dk.unf.MauMau.network.NetPkg.NetPkg;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class Client {
     public synchronized boolean connect() {
         try {
             Log.i("Mau","About to create socket!");
-            socket = new Socket(InetAddress.getByName("192.168.43.28"),8080);
+            socket = new Socket(InetAddress.getByName("192.168.43.226"),8080);
             if (socket.isConnected()) {
                 Log.i("Mau", "Successfully connected!");
             }
@@ -61,11 +61,13 @@ public class Client {
                 String inLine;
 
                 while ((inLine = in.readLine()) != null) {
-                    Log.i("Mau","Got pkg: " + inLine);
+                    //NetPkg pkg = new NetPkg(NetPkg.PKG_CONNECT);
+                    for (NetListener listener : listeners) {
+                    //    listener.received(pkg);
+                    }
                 }
             }
             while (!pkgQueue.isEmpty()) {
-                Log.i("Mau","Sending pkg");
                 out.println(pkgQueue.poll().serialize());
                 out.flush();
             }

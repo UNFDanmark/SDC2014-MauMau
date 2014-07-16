@@ -2,12 +2,10 @@ package dk.unf.MauMau;
 
 import android.content.Context;
 import android.graphics.*;
+import android.util.Log;
 import android.view.View;
 import dk.unf.MauMau.game.Game;
-import dk.unf.MauMau.ui.AssetLoader;
-import dk.unf.MauMau.ui.GameRender;
-import dk.unf.MauMau.ui.MainMenu;
-import dk.unf.MauMau.ui.UIState;
+import dk.unf.MauMau.ui.*;
 
 /**
  * Created by sdc on 7/15/14.
@@ -17,6 +15,9 @@ public class CanvasManager extends View {
     private final int WIDTH = 720;
 
     AssetLoader loader = new AssetLoader();
+
+    //No other place to put it?
+    private Game game;
 
     public final static int MAIN_MENU_STATE = 0;
     public final static int GAME_STATE = 1;
@@ -31,7 +32,7 @@ public class CanvasManager extends View {
         for (UIState state : states) {
             state.init(this);
         }
-        currentState = states[GAME_STATE];
+        currentState = states[MAIN_MENU_STATE];
         currentState.onEnter();
     }
 
@@ -47,6 +48,16 @@ public class CanvasManager extends View {
         currentState = states[state];
     }
 
+    public void onPause() {
+        if (game != null) {
+            game.stopGame();
+        }
+        for (UIState state : states) {
+            state.onLeave();
+        }
+        currentState = states[MAIN_MENU_STATE];
+    }
+
     private void leaveCurrentState() {
         currentState.onLeave();
     }
@@ -57,6 +68,18 @@ public class CanvasManager extends View {
 
     public CanvasManager(Context context) {
         super(context);
+    }
+
+    void onTouchEvent(InputEvent event) {
+        currentState.onInputEvent(event);
+    }
+
+    public void startHost() {
+        game = new Game(Settings.getIP());
+        Thread gameServerThread = new Thread(game);
+        gameServerThread.setName("GameServerThread");
+        gameServerThread.start();
+        Settings.setRunningHost(true);
     }
 
 }

@@ -12,6 +12,8 @@ public interface UIState {
 
     public void onLeave();
 
+    public void onInputEvent(InputEvent event);
+
     public void init(CanvasManager manager);
 
     public void draw(Canvas canvas);
