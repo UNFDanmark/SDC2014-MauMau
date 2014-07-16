@@ -25,8 +25,8 @@ public class Game {
             for(int j = 0; j < 3; j++){
                 deck.push(new Card(i, j, 0));
             }
-
         }
+        Collections.shuffle(deck);
         for(int i = 0; i < 5; i++){
             cardsToGive.add(deck.pop());
         }
