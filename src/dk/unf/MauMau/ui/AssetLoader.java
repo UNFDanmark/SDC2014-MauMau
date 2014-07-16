@@ -25,7 +25,8 @@ public class AssetLoader {
     private Map<Integer, Bitmap> spadesBitmaps = new HashMap<Integer, Bitmap>();
     private Map<Integer, Bitmap> diamondsBitmaps = new HashMap<Integer, Bitmap>();
     private Bitmap cardBack;
-    private Bitmap background;
+    private Bitmap gameBackground;
+    private Bitmap mainMenuBackground;
 
 
     public void load(Context context) {
@@ -37,7 +38,7 @@ public class AssetLoader {
             for (int k = 0; k < 4; k++) {
                 Bitmap bitmap = getBitmapFromAsset(context,  "c" + j + getLetter(k)+".png");
                 System.out.println("c" + j + getLetter(k)+".png");
-                bitmap = scaleDown(bitmap, 200, true);
+                bitmap = scaleDown(bitmap, 200, true, true);
                 switch (k) {
                     case HEARTS_ID:
                         heartsBitmaps.put(j, bitmap);
@@ -54,12 +55,22 @@ public class AssetLoader {
                 }
             }
         }
-        background = getBitmapFromAsset(context,"BestBackground.png");
-        cardBack = scaleDown(getBitmapFromAsset(context, "Red_Back.png"), 200, true); //Loads the cardback for the method getFaceDown
+        gameBackground = getBitmapFromAsset(context, "newBestBackground.png");
+        mainMenuBackground = getBitmapFromAsset(context,"MainMenuBackground.png");
+        cardBack = scaleDown(getBitmapFromAsset(context, "Red_Back.png"), 200, true, true); //Loads the cardback for the method getFaceDown
     }
 
-    public Bitmap getBackground(int height){
-        return scaleDown(background,height,true);
+    public Bitmap getBackground(int height, int backgroundId){
+        switch(backgroundId){
+            case 0:
+                return scaleDown(gameBackground,height,true, false);
+            case 1:
+                return scaleDown(mainMenuBackground,height,true, false);
+            default:
+                return null;
+        }
+
+
     }
 
     public Bitmap getCard(int cardValue, int cardColor) { //Gets a bitmap given a value and a color
@@ -99,16 +110,22 @@ public class AssetLoader {
     }
 
     public Bitmap scaleDown(Bitmap realImage, float maxImageSize,
-                                   boolean filter) { //Scales down an image to a specific height and keeps the ratio
+                                   boolean filter, boolean keepRatio) { //Scales down an image to a specific height
         float ratio = Math.min(
                 maxImageSize / realImage.getWidth(),
                 maxImageSize / realImage.getHeight());
         int width = Math.round(ratio * realImage.getWidth());
         int height = Math.round(ratio * realImage.getHeight());
+        if(!keepRatio){
+            Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, realImage.getWidth(),
+                    height, filter);
+            return newBitmap;
+        }else {
+            Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width,
+                    height, filter);
+            return newBitmap;
+        }
 
-        Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width,
-                height, filter);
-        return newBitmap;
     }
 
     private char getLetter(int index) { //Gets a card letter given an index
