@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.Window;
 import dk.unf.MauMau.network.Client;
 import dk.unf.MauMau.network.NetPkg;
 import dk.unf.MauMau.network.Server;
@@ -14,7 +15,6 @@ import dk.unf.MauMau.network.Server;
 public class MainActivity extends Activity {
 
     private Client client;
-    private Server server;
 
     /**
      * Called when the activity is first created.
@@ -22,6 +22,7 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         BoardCanvas boardCanvas = new BoardCanvas(this);
         boardCanvas.init(getApplicationContext());
         setContentView(boardCanvas);
@@ -33,30 +34,6 @@ public class MainActivity extends Activity {
         Log.i("Mau", ipAdress);
 
 
-                //True for server , false for client
-        if (true) {
-        } else {
-            client = new Client();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    client.connect();
-                    while (client.isConnected()) {
-                        client.tick();
-                        try {
-                            java.lang.Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }).start();
-            NetPkg pkg = new NetPkg(NetPkg.PKG_CONNECT);
-            pkg.addString("Ello Server!");
-            client.send(pkg);
-
-        }
-
     }
 
     @Override
@@ -66,9 +43,6 @@ public class MainActivity extends Activity {
             client.close();
         }
 
-        if (server != null) {
-            server.close();
-        }
     }
 
     @Override
