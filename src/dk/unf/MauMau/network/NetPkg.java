@@ -5,10 +5,18 @@ package dk.unf.MauMau.network;
  */
 public class NetPkg {
 
+    public static final int PKG_CONNECT = 0;
+    public static final int PKG_DISCONNECT = 1;
+
     private String data;
+    private int type;
 
-    public NetPkg() {
+    public NetPkg(int type) {
+        this.type = type;
+    }
 
+    public int getType() {
+        return type;
     }
 
     public void addString(String string) {

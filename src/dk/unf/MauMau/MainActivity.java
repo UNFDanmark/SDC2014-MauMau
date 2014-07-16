@@ -6,6 +6,7 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.text.format.Formatter;
 import android.util.Log;
+import android.view.MotionEvent;
 import dk.unf.MauMau.network.Client;
 import dk.unf.MauMau.network.NetPkg;
 import dk.unf.MauMau.network.Server;
@@ -34,8 +35,6 @@ public class MainActivity extends Activity {
 
                 //True for server , false for client
         if (true) {
-            server = new Server(ipAdress);
-            new Thread(server).start();
         } else {
             client = new Client();
             new Thread(new Runnable() {
@@ -52,7 +51,7 @@ public class MainActivity extends Activity {
                     }
                 }
             }).start();
-            NetPkg pkg = new NetPkg();
+            NetPkg pkg = new NetPkg(NetPkg.PKG_CONNECT);
             pkg.addString("Ello Server!");
             client.send(pkg);
 
@@ -69,6 +68,19 @@ public class MainActivity extends Activity {
 
         if (server != null) {
             server.close();
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        int action = event.getActionMasked();
+
+        switch (action) {
+            case MotionEvent.ACTION_DOWN: Log.i("Mau", "Detected down"); return true;
+            case MotionEvent.ACTION_MOVE: Log.i("Mau", "Detected move"); return true;
+            case MotionEvent.ACTION_UP: Log.i("Mau", "Detected up"); return true;
+            default: return super.onTouchEvent(event);
         }
     }
 }
