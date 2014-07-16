@@ -53,5 +53,8 @@ public class GameRender {
             System.out.println(cardWidth + " ");
             canvas.drawBitmap(card, i*spacing+x, HEIGHT-200, null);
         }
+
+
+
     }
 }
