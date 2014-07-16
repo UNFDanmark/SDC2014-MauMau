@@ -8,8 +8,8 @@ public class CardElement extends Element {
     int cardColor;
 
 
-    public CardElement(int id, int x, int y, int width, int height, int cardColor, int cardValue) {
-        super(id, x, y, width, height);
+    public CardElement(int x, int y, int width, int height, int cardColor, int cardValue) {
+        super(x, y, width, height);
 
         this.cardColor = cardColor;
         this.cardValue = cardValue;

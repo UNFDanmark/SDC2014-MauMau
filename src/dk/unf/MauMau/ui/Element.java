@@ -5,23 +5,17 @@ package dk.unf.MauMau.ui;
  */
 public abstract class Element {
 
-    protected int id;
     protected int x;
     protected int y;
     protected int width;
     protected int height;
 
 
-    public Element(int id, int x, int y, int width, int height) {
-        this.id = id;
+    public Element(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public int getX() {

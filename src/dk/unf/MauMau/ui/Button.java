@@ -4,7 +4,6 @@ package dk.unf.MauMau.ui;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import dk.unf.MauMau.InputEvent;
 
 /**
  * Created by sdc on 7/16/14.
@@ -20,8 +19,8 @@ public class Button extends Element {
 
     private OnClickListener listener;
 
-    public Button(String text, int id, int x, int y, int width, int height) {
-        super(id,x,y,width,height);
+    public Button(String text, int x, int y, int width, int height) {
+        super(x,y,width,height);
         this.text = text;
         paint = new Paint();
         paint.setColor(Color.WHITE);
