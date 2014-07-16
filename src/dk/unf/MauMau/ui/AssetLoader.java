@@ -23,39 +23,53 @@ public class AssetLoader {
     public final static int CLUBS_ID = 1;
     public final static int SPADES_ID = 2;
     public final static int DIAMONDS_ID = 3;
-    private Map<Integer,Bitmap> heartsBitmaps = new HashMap<Integer,Bitmap>();
-    private Map<Integer,Bitmap> clubsBitmaps = new HashMap<Integer, Bitmap>();
-    private Map<Integer,Bitmap> spadesBitmaps = new HashMap<Integer, Bitmap>();
-    private Map<Integer,Bitmap> diamondsBitmaps = new HashMap<Integer, Bitmap>();
+    private Map<Integer, Bitmap> heartsBitmaps = new HashMap<Integer, Bitmap>();
+    private Map<Integer, Bitmap> clubsBitmaps = new HashMap<Integer, Bitmap>();
+    private Map<Integer, Bitmap> spadesBitmaps = new HashMap<Integer, Bitmap>();
+    private Map<Integer, Bitmap> diamondsBitmaps = new HashMap<Integer, Bitmap>();
 
-    public void load(Context context){
-        for(int i = 0; i < 32; i++){
-            String path = "file:///android_asset/";
-            for (int j = 6; j < 13; j++) {
-                for (int k = 0; k < 4; k++) {
-                    Bitmap bitmap = getBitmapFromAsset(context, path+'c'+j+getLetter(k));
-                    bitmap = scaleDown(bitmap, 200, true);
-                    switch (k) {
-                        case HEARTS_ID: heartsBitmaps.put(j,bitmap); break;
-                        case CLUBS_ID: clubsBitmaps.put(j,bitmap); break;
-                        case SPADES_ID: spadesBitmaps.put(j,bitmap); break;
-                        case DIAMONDS_ID: diamondsBitmaps.put(j,bitmap); break;
-                    }
+    public void load(Context context) {
+        for (int j = 6; j < 13; j++) {
+            for (int k = 0; k < 4; k++) {
+                Bitmap bitmap = getBitmapFromAsset(context,  "c" + j + getLetter(k)+".png");
+                System.out.println("c" + j + getLetter(k)+".png");
+                bitmap = scaleDown(bitmap, 200, true);
+                switch (k) {
+                    case HEARTS_ID:
+                        heartsBitmaps.put(j, bitmap);
+                        break;
+                    case CLUBS_ID:
+                        clubsBitmaps.put(j, bitmap);
+                        break;
+                    case SPADES_ID:
+                        spadesBitmaps.put(j, bitmap);
+                        break;
+                    case DIAMONDS_ID:
+                        diamondsBitmaps.put(j, bitmap);
+                        break;
                 }
             }
-
         }
+
     }
 
 
     public Bitmap getCard(int cardValue, int cardColor) {
         switch (cardColor) {
-            case HEARTS_ID: heartsBitmaps.get(cardValue); break;
-            case CLUBS_ID: clubsBitmaps.get(cardValue); break;
-            case SPADES_ID: spadesBitmaps.get(cardValue); break;
-            case DIAMONDS_ID: diamondsBitmaps.get(cardValue); break;
+            case HEARTS_ID:
+                return heartsBitmaps.get(cardValue);
+            case CLUBS_ID:
+                return clubsBitmaps.get(cardValue);
+            case SPADES_ID:
+                return spadesBitmaps.get(cardValue);
+            case DIAMONDS_ID:
+                return diamondsBitmaps.get(cardValue);
+            default:
+                Log.e("Mau", "Something went very wrong");
+                return null;
         }
     }
+
 
     private static Bitmap getBitmapFromAsset(Context context, String filePath) {
         AssetManager assetManager = context.getAssets();
@@ -87,12 +101,16 @@ public class AssetLoader {
 
     private char getLetter(int index) {
         switch (index) {
-            case HEARTS_ID: return   'h';
-            case CLUBS_ID: return    'c';
-            case SPADES_ID: return   's';
-            case DIAMONDS_ID: return 'd';
+            case HEARTS_ID:
+                return 'h';
+            case CLUBS_ID:
+                return 'c';
+            case SPADES_ID:
+                return 's';
+            case DIAMONDS_ID:
+                return 'd';
             default:
-                Log.e("Mau","Something went very wrong");
+                Log.e("Mau", "Something went very wrong");
                 return 'F';
         }
     }

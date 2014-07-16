@@ -22,6 +22,7 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         BoardCanvas boardCanvas = new BoardCanvas(this);
+        boardCanvas.init(getApplicationContext());
         setContentView(boardCanvas);
 
         WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
@@ -32,7 +33,7 @@ public class MainActivity extends Activity {
 
 
                 //True for server , false for client
-        if (false) {
+        if (true) {
             server = new Server(ipAdress);
             new Thread(server).start();
         } else {
