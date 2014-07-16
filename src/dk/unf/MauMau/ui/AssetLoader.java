@@ -25,6 +25,8 @@ public class AssetLoader {
     private Map<Integer, Bitmap> spadesBitmaps = new HashMap<Integer, Bitmap>();
     private Map<Integer, Bitmap> diamondsBitmaps = new HashMap<Integer, Bitmap>();
     private Bitmap cardBack;
+    private Bitmap background;
+
 
     public void load(Context context) {
         /*
@@ -52,9 +54,13 @@ public class AssetLoader {
                 }
             }
         }
+        background = getBitmapFromAsset(context,"BestBackground.png");
         cardBack = scaleDown(getBitmapFromAsset(context, "Red_Back.png"), 200, true); //Loads the cardback for the method getFaceDown
     }
 
+    public Bitmap getBackground(int height){
+        return scaleDown(background,height,true);
+    }
 
     public Bitmap getCard(int cardValue, int cardColor) { //Gets a bitmap given a value and a color
         switch (cardColor) {

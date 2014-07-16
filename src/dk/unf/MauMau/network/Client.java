@@ -34,7 +34,7 @@ public class Client {
     public synchronized boolean connect() {
         try {
             Log.i("Mau","About to create socket!");
-            socket = new Socket(InetAddress.getByName("192.168.43.226"),8080);
+            socket = new Socket(InetAddress.getByName("10.16.111.23"),8080);
             if (socket.isConnected()) {
                 Log.i("Mau", "Successfully connected!");
                 running = true;
