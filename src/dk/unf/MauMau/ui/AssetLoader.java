@@ -24,8 +24,13 @@ public class AssetLoader {
     private Map<Integer, Bitmap> clubsBitmaps = new HashMap<Integer, Bitmap>();
     private Map<Integer, Bitmap> spadesBitmaps = new HashMap<Integer, Bitmap>();
     private Map<Integer, Bitmap> diamondsBitmaps = new HashMap<Integer, Bitmap>();
+    private Bitmap cardBack;
 
     public void load(Context context) {
+        /*
+        Loads all the image cards by using the method
+        getBitmapFromAsset. The naming convention is c<cardValue><cardColor>
+         */
         for (int j = 6; j < 13; j++) {
             for (int k = 0; k < 4; k++) {
                 Bitmap bitmap = getBitmapFromAsset(context,  "c" + j + getLetter(k)+".png");
@@ -47,11 +52,11 @@ public class AssetLoader {
                 }
             }
         }
-
+        cardBack = scaleDown(getBitmapFromAsset(context, "Red_Back.png"), 200, true); //Loads the cardback for the method getFaceDown
     }
 
 
-    public Bitmap getCard(int cardValue, int cardColor) {
+    public Bitmap getCard(int cardValue, int cardColor) { //Gets a bitmap given a value and a color
         switch (cardColor) {
             case HEARTS_ID:
                 return heartsBitmaps.get(cardValue);
@@ -62,13 +67,13 @@ public class AssetLoader {
             case DIAMONDS_ID:
                 return diamondsBitmaps.get(cardValue);
             default:
-                Log.e("Mau", "Something went very wrong");
+                Log.e("Mau", "You called an invalid cardColor");
                 return null;
         }
     }
 
 
-    private static Bitmap getBitmapFromAsset(Context context, String filePath) {
+    private Bitmap getBitmapFromAsset(Context context, String filePath) {
         AssetManager assetManager = context.getAssets();
 
         InputStream istr;
@@ -83,8 +88,12 @@ public class AssetLoader {
         return bitmap;
     }
 
-    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
-                                   boolean filter) {
+    public Bitmap getFaceDown(){ //cardBack is set in load()
+        return cardBack;
+    }
+
+    public Bitmap scaleDown(Bitmap realImage, float maxImageSize,
+                                   boolean filter) { //Scales down an image to a specific height and keeps the ratio
         float ratio = Math.min(
                 maxImageSize / realImage.getWidth(),
                 maxImageSize / realImage.getHeight());
@@ -96,7 +105,7 @@ public class AssetLoader {
         return newBitmap;
     }
 
-    private char getLetter(int index) {
+    private char getLetter(int index) { //Gets a card letter given an index
         switch (index) {
             case HEARTS_ID:
                 return 'h';
@@ -107,7 +116,7 @@ public class AssetLoader {
             case DIAMONDS_ID:
                 return 'd';
             default:
-                Log.e("Mau", "Something went very wrong");
+                Log.e("Mau", "The index provided was to large");
                 return 'F';
         }
     }

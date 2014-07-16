@@ -21,6 +21,7 @@ public class GameRender implements UIState {
     Client client;
     Paint paint = new Paint();
     List<CardElement> cards = new ArrayList<CardElement>();
+    List<CardElement> playedCards = new ArrayList<CardElement>();
     int spacing = 50;
     int cardWidth = Math.round(200 * 0.7106f);
 
@@ -37,6 +38,8 @@ public class GameRender implements UIState {
         cards.add(new CardElement(0,0,0,0,3,7));
         cards.add(new CardElement(0,0,0,0,0,12));
         cards.add(new CardElement(0,0,0,0,2,6));
+
+        playedCards.add(new CardElement(0,0,0,0,0,12));
         /*
         client = new Client();
         new Thread(new Runnable() {
@@ -74,6 +77,13 @@ public class GameRender implements UIState {
             System.out.println(cardWidth + " ");
             canvas.drawBitmap(card, i*spacing+x, HEIGHT-400, null);
         }
+        for (int i = 0; i < 10; i++) { //Show the deck
+            canvas.drawBitmap(loader.getFaceDown(), WIDTH / 2 - loader.getFaceDown().getWidth() / 2, 20+i*5, null);
+        }
 
+        for( int i = 0; i < playedCards.size(); i ++) { //Show played cards
+            Bitmap card = loader.getCard(playedCards.get(i).cardValue, playedCards.get(i).cardColor);
+            canvas.drawBitmap(card, WIDTH / 2 - card.getWidth() / 2, 320, null);
+        }
     }
 }
