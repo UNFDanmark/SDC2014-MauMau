@@ -98,6 +98,14 @@ public class GameRender implements UIState, NetListener {
             System.out.println(cardWidth + " ");
             canvas.drawBitmap(card, i*spacing+x, HEIGHT-400, null);
         }
+        for (int i = 0; i < 10; i++) { //Show the deck
+            canvas.drawBitmap(loader.getFaceDown(), WIDTH / 2 - loader.getFaceDown().getWidth() / 2, 20+i*5, null);
+        }
+
+        for( int i = 0; i < playedCards.size(); i ++) { //Show played cards
+            Bitmap card = loader.getCard(playedCards.get(i).cardValue, playedCards.get(i).cardColor);
+            canvas.drawBitmap(card, WIDTH / 2 - card.getWidth() / 2, 320, null);
+        }
 
     }
 
@@ -112,13 +120,6 @@ public class GameRender implements UIState, NetListener {
 
     @Override
     public synchronized void onTimeout() {
-        for (int i = 0; i < 10; i++) { //Show the deck
-            canvas.drawBitmap(loader.getFaceDown(), WIDTH / 2 - loader.getFaceDown().getWidth() / 2, 20+i*5, null);
-        }
 
-        for( int i = 0; i < playedCards.size(); i ++) { //Show played cards
-            Bitmap card = loader.getCard(playedCards.get(i).cardValue, playedCards.get(i).cardColor);
-            canvas.drawBitmap(card, WIDTH / 2 - card.getWidth() / 2, 320, null);
-        }
     }
 }
