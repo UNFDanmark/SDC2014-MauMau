@@ -21,8 +21,11 @@ public class Game {
         this.players = players;
         this.cardsToGive = cardsToGive;
 
-        for(int i = 0; i < 8; i++){
-            deck.push(new Card(i, 'd', 0));
+        for(int i = 6; i < 13; i++){
+            for(int j = 0; j < 3; j++){
+                deck.push(new Card(i, j, 0));
+            }
+
         }
         for(int i = 0; i < 5; i++){
             cardsToGive.add(deck.pop());
