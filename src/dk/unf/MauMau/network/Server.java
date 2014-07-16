@@ -2,6 +2,7 @@ package dk.unf.MauMau.network;
 
 import android.util.Log;
 import dk.unf.MauMau.network.NetPkg.NetPkg;
+import dk.unf.MauMau.network.NetPkg.PkgConnect;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -91,10 +92,10 @@ public class Server implements Runnable {
             while (running) {
                 if (socket.getInputStream().available() > 0) {
                     String inputLine;
-                    //NetPkg pkg = new NetPkg(NetPkg.PKG_CONNECT);
+                    PkgConnect pkg = new PkgConnect("Player",1);
                     while ((inputLine = in.readLine()) != null) {
                         for (NetListener listener : listeners) {
-                      //      listener.received(pkg);
+                            listener.received(pkg);
                         }
                     }
                 }

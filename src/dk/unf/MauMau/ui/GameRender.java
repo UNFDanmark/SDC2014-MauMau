@@ -10,6 +10,7 @@ import dk.unf.MauMau.Settings;
 import dk.unf.MauMau.network.Client;
 import dk.unf.MauMau.network.NetListener;
 import dk.unf.MauMau.network.NetPkg.NetPkg;
+import dk.unf.MauMau.network.NetPkg.PkgConnect;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +66,7 @@ public class GameRender implements UIState, NetListener {
             @Override
             public void run() {
                 client.connect();
-                while (client.isConnected()) {
+                while (client.running) {
                     client.tick();
                     try {
                         java.lang.Thread.sleep(1000);
@@ -75,9 +76,8 @@ public class GameRender implements UIState, NetListener {
                 }
             }
         }).start();
-        //NetPkg pkg = new NetPkg(NetPkg.PKG_CONNECT);
-        //pkg.addString("Ello Server!");
-        //client.send(pkg);
+        PkgConnect pkg = new PkgConnect("Player",-1);
+        client.send(pkg);
     }
 
     @Override
