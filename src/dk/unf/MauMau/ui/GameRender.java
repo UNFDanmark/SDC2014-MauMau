@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
 import dk.unf.MauMau.CanvasManager;
+import dk.unf.MauMau.MainActivity;
 import dk.unf.MauMau.Settings;
 import dk.unf.MauMau.network.Client;
 import dk.unf.MauMau.network.NetListener;
@@ -20,7 +21,7 @@ import java.util.List;
  * Created by sdc on 7/16/14.
  */
 public class GameRender implements UIState, NetListener {
-    private final int HEIGHT = 1280;
+    private final int HEIGHT = MainActivity.HEIGHT;
     private final int WIDTH = 720;
 
     private String serverIP;
@@ -82,6 +83,7 @@ public class GameRender implements UIState, NetListener {
     }
 
     public void draw(Canvas canvas){
+        canvas.drawBitmap(loader.getBackground(HEIGHT, 0), 0, 0, null);
         int x = WIDTH/2 - (spacing * (5 - 1) + cardWidth)/2;
         paint.setColor(Color.RED);
         for(int i = 0; i < cards.size(); i++){

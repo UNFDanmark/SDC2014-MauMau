@@ -3,6 +3,7 @@ package dk.unf.MauMau.ui;
 import android.graphics.Canvas;
 import android.util.Log;
 import dk.unf.MauMau.CanvasManager;
+import dk.unf.MauMau.MainActivity;
 
 import java.util.ArrayList;
 
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 public class MainMenu implements UIState {
 
     private static final int WIDTH = 720;
-    private static final int HEIGHT = 1280;
+    private static final int HEIGHT = MainActivity.HEIGHT;
 
     private static final int BUTTON_WIDTH = 400;
     private static final int BUTTON_HEIGHT = 100;
@@ -22,12 +23,15 @@ public class MainMenu implements UIState {
 
     ArrayList<Button> buttons = new ArrayList<Button>();
 
+    AssetLoader loader;
+
     public MainMenu() {
         //All construction code in init()
     }
 
     @Override
     public void init(final CanvasManager manager) {
+        loader = manager.getLoader();
         buttons.add(spawnButton("Create game", 0, new OnClickListener() {
             @Override
             public void onClick(Element element) {
@@ -77,6 +81,8 @@ public class MainMenu implements UIState {
 
     @Override
     public void draw(Canvas canvas) {
+        canvas.drawBitmap(loader.getBackground(HEIGHT, 1),0,0,null);
+
         for (Button button : buttons) {
             button.draw(canvas);
         }
