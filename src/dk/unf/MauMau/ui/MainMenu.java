@@ -31,8 +31,14 @@ public class MainMenu implements UIState {
         buttons.add(spawnButton("Create game", 0, new OnClickListener() {
             @Override
             public void onClick(Element element) {
-                Log.i("Mau", "Clicked on Create Game");
-                //manager.gotoState(CanvasManager.GAME_STATE);
+                manager.startHost();
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    Log.e("Mau", "Failed to wait for socket");
+                    e.printStackTrace();
+                }
+                manager.gotoState(CanvasManager.GAME_STATE);
             }
         }));
 

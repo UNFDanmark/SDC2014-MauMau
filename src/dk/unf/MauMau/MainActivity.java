@@ -8,12 +8,13 @@ import android.text.format.Formatter;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.Window;
-import dk.unf.MauMau.network.Client;
 import dk.unf.MauMau.ui.InputEvent;
 
 public class MainActivity extends Activity {
 
     private CanvasManager canvasManager;
+
+    public static String ip;
 
     /**
      * Called when the activity is first created.
@@ -30,6 +31,7 @@ public class MainActivity extends Activity {
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         int ip = wifiInfo.getIpAddress();
         String ipAdress = Formatter.formatIpAddress(ip);
+        Settings.setIP(ipAdress);
         Log.i("Mau", ipAdress);
 
 
@@ -38,6 +40,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+        canvasManager.onPause();
     }
 
     @Override

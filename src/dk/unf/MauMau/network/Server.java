@@ -1,6 +1,7 @@
 package dk.unf.MauMau.network;
 
 import android.util.Log;
+import dk.unf.MauMau.network.NetPkg.NetPkg;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,7 +19,9 @@ public class Server implements Runnable {
     private ServerSocket socket;
     private volatile boolean running = true;
     private ArrayList<ServerThread> threads;
+    private ArrayList<NetListener> listeners = new ArrayList<NetListener>();
     private InetSocketAddress address;
+    private int connectionID;
 
     public Server(String ip) {
         threads = new ArrayList<ServerThread>();
@@ -34,7 +37,9 @@ public class Server implements Runnable {
             while (running) {
                 Log.i("Mau","Waiting for new connection");
                 ServerThread thread = new ServerThread(socket.accept());
-                new Thread(thread).start();
+                Thread clientThread = new Thread(thread);
+                clientThread.setName("ClientThread"+connectionID++);
+                clientThread.start();
                 threads.add(thread);
             }
 
@@ -44,15 +49,13 @@ public class Server implements Runnable {
         }
     }
 
-    public synchronized void kill() {
-        running = false;
-    }
-
     public void addListener(NetListener listener) {
 
     }
 
-    public void close() {
+    public synchronized void close() {
+        running = false;
+        Log.i("Mau","Closing server thread");
         for (ServerThread thread : threads) {
             thread.closeSocket();
         }
@@ -66,7 +69,7 @@ public class Server implements Runnable {
     private class ServerThread implements Runnable {
 
         private Socket socket;
-        private boolean running = true;
+        private volatile boolean running = true;
 
         public ServerThread(Socket socket) {
             Log.i("Mau","New connection!");
@@ -79,16 +82,23 @@ public class Server implements Runnable {
             try {
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                while (running) {
-                    if (socket.getInputStream().available() > 0) {
-                        String inputLine;
-                        while ((inputLine = in.readLine()) != null) {
-                            System.out.println("Got msg: " + inputLine);
-                            Log.i("Mau","Ello:" + inputLine);
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            out.println("Connected");
+            while (running) {
+                if (socket.getInputStream().available() > 0) {
+                    String inputLine;
+                    //NetPkg pkg = new NetPkg(NetPkg.PKG_CONNECT);
+                    while ((inputLine = in.readLine()) != null) {
+                        for (NetListener listener : listeners) {
+                      //      listener.received(pkg);
                         }
                     }
-                    out.println("200");
                 }
+            }
             } catch (IOException e) {
                 e.printStackTrace();
             }
