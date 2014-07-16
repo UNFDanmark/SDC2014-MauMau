@@ -1,4 +1,4 @@
-package dk.unf.MauMau;
+package dk.unf.MauMau.ui;
 
 /**
  * Created by sdc on 7/16/14.

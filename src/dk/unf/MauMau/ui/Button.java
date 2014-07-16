@@ -4,6 +4,7 @@ package dk.unf.MauMau.ui;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 
 /**
  * Created by sdc on 7/16/14.
@@ -11,10 +12,6 @@ import android.graphics.Paint;
 public class Button extends Element {
 
     private String text;
-    private int x;
-    private int y;
-    private int width;
-    private int height;
     private Paint paint;
 
     private OnClickListener listener;
@@ -24,6 +21,7 @@ public class Button extends Element {
         this.text = text;
         paint = new Paint();
         paint.setColor(Color.WHITE);
+        paint.setTextSize(42);
     }
 
     public void tick(InputEvent event) {

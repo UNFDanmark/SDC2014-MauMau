@@ -9,8 +9,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.Window;
 import dk.unf.MauMau.network.Client;
-import dk.unf.MauMau.network.NetPkg;
-import dk.unf.MauMau.network.Server;
 
 public class MainActivity extends Activity {
 
@@ -23,9 +21,9 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        BoardCanvas boardCanvas = new BoardCanvas(this);
-        boardCanvas.init(getApplicationContext());
-        setContentView(boardCanvas);
+        CanvasManager canvasManager = new CanvasManager(this);
+        canvasManager.init(getApplicationContext());
+        setContentView(canvasManager);
 
         WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
