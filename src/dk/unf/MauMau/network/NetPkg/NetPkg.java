@@ -13,6 +13,7 @@ public interface NetPkg {
     public static final int PKG_ALLOWED_THROWS = 5;
     public static final int PKG_FACE_CARD = 6;
     public static final int PKG_NEXT_TURN = 7;
+    public static final int PKG_HANDSHAKE = 8;
 
     public int getType();
 

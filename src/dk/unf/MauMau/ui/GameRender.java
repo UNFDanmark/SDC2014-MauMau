@@ -11,6 +11,7 @@ import dk.unf.MauMau.network.Client;
 import dk.unf.MauMau.network.NetListener;
 import dk.unf.MauMau.network.NetPkg.NetPkg;
 import dk.unf.MauMau.network.NetPkg.PkgConnect;
+import dk.unf.MauMau.network.NetPkg.PkgDrawCard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,12 +42,6 @@ public class GameRender implements UIState, NetListener {
         canvasManager = manager;
         loader = manager.getLoader();
 
-        cards.add(new CardElement(0,0,0,0,2,8));
-        cards.add(new CardElement(0,0,0,0,1,10));
-        cards.add(new CardElement(0,0,0,0,3,7));
-        cards.add(new CardElement(0,0,0,0,0,12));
-        cards.add(new CardElement(0,0,0,0,2,6));
-
         playedCards.add(new CardElement(0,0,0,0,0,12));
 
     }
@@ -62,26 +57,22 @@ public class GameRender implements UIState, NetListener {
         
         client = new Client();
         client.addListener(this);
-        new Thread(new Runnable() {
+        Thread clientThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 client.connect();
                 while (client.running) {
                     client.tick();
-                    try {
-                        java.lang.Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
-        }).start();
-        PkgConnect pkg = new PkgConnect("Player",-1);
-        client.send(pkg);
+        });
+        clientThread.setName("ClientSocketTickerThread");
+        clientThread.start();
     }
 
     @Override
     public void onLeave() {
+        client.running = false;
         client.close();
     }
 
@@ -111,7 +102,10 @@ public class GameRender implements UIState, NetListener {
 
     @Override
     public synchronized void received(NetPkg data) {
+
         switch (data.getType()) {
+            case NetPkg.PKG_DRAW_CARD: cards.add(new CardElement(0, 0, 0, 0, ((PkgDrawCard) data).card.cardValue, ((PkgDrawCard) data).card.color)); break;
+            case NetPkg.PKG_HANDSHAKE: client.send(new PkgConnect("Player",-1)); break;
             default: Log.i("Mau", "Client received unknown package of type: " + data.getType());
         }
         canvasManager.postInvalidate();
