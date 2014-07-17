@@ -1,8 +1,7 @@
 package dk.unf.MauMau.network;
 
 import android.util.Log;
-import dk.unf.MauMau.network.NetPkg.NetPkg;
-import dk.unf.MauMau.network.NetPkg.PkgConnect;
+import dk.unf.MauMau.network.NetPkg.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,6 +11,8 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created by sdc on 7/15/14.
@@ -51,7 +52,11 @@ public class Server implements Runnable {
     }
 
     public void addListener(NetListener listener) {
+        listeners.add(listener);
+    }
 
+    public synchronized void sendPkg(NetPkg pkg, int id) {
+        threads.get(id).sendPkg(pkg);
     }
 
     public synchronized void close() {
@@ -72,9 +77,15 @@ public class Server implements Runnable {
         private Socket socket;
         private volatile boolean running = true;
 
+        private Queue<NetPkg> socketQueue = new ConcurrentLinkedQueue<NetPkg>();
+
         public ServerThread(Socket socket) {
             Log.i("Mau","New connection!");
             this.socket = socket;
+        }
+
+        public void sendPkg(NetPkg pkg) {
+            socketQueue.add(pkg);
         }
 
         public void run() {
@@ -88,21 +99,37 @@ public class Server implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            out.println("Connected");
+            out.println(new PkgHandshake().serialize());
+            running = true;
             while (running) {
-                if (socket.getInputStream().available() > 0) {
+                if (in.ready()) {
                     String inputLine;
-                    PkgConnect pkg = new PkgConnect("Player",1);
-                    while ((inputLine = in.readLine()) != null) {
+                    while (in.ready() && (inputLine = in.readLine()) != null) {
+                        NetPkg pkg = createPkg(inputLine);
                         for (NetListener listener : listeners) {
                             listener.received(pkg);
                         }
                     }
                 }
+                while (!socketQueue.isEmpty()) {
+                    out.println(socketQueue.poll().serialize());
+                }
             }
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        private NetPkg createPkg(String data) {
+            int type = Integer.parseInt(data.substring(0,2));
+            switch (type) {
+                case NetPkg.PKG_CONNECT: return new PkgConnect(data.substring(2));
+                case NetPkg.PKG_START_GAME: return new PkgStartGame();
+                case NetPkg.PKG_THROW_CARD: return new PkgThrowCard(data.substring(2));
+                //case NetPkg.PKG_DISCONNECT: return new PkgDisconnect(data.substring(2));
+                default: Log.e("Mau","Package type " + type + " not implemented yet...");
+            }
+            return new PkgHandshake();
         }
 
         public synchronized void closeSocket() {

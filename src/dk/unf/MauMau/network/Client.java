@@ -1,8 +1,7 @@
 package dk.unf.MauMau.network;
 
 import android.util.Log;
-import dk.unf.MauMau.network.NetPkg.NetPkg;
-import dk.unf.MauMau.network.NetPkg.PkgConnect;
+import dk.unf.MauMau.network.NetPkg.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,10 +30,10 @@ public class Client {
         pkgQueue = new ConcurrentLinkedQueue<NetPkg>();
     }
 
-    public synchronized boolean connect() {
+    public synchronized boolean connect(String ip) {
         try {
             Log.i("Mau","About to create socket!");
-            socket = new Socket(InetAddress.getByName("10.16.111.23"),8080);
+            socket = new Socket(InetAddress.getByName(ip),8080);
             if (socket.isConnected()) {
                 Log.i("Mau", "Successfully connected!");
                 running = true;
@@ -60,11 +59,10 @@ public class Client {
 
     public synchronized void tick() {
         try {
-            if (socket.getInputStream().available() > 0) {
+            if (in.ready()) {
                 String inLine;
-
-                while ((inLine = in.readLine()) != null) {
-                    PkgConnect pkg = new PkgConnect(inLine);
+                while (in.ready() && (inLine = in.readLine()) != null) {
+                    NetPkg pkg = createPkg(inLine);
                     for (NetListener listener : listeners) {
                         listener.received(pkg);
                     }
@@ -80,12 +78,22 @@ public class Client {
         }
     }
 
-    public boolean isConnected() {
-        return socket.isConnected();
+    private NetPkg createPkg(String data) {
+        int type = Integer.parseInt(data.substring(0,2));
+        switch (type) {
+            case NetPkg.PKG_CONNECT: return new PkgConnect(data.substring(2));
+            //case NetPkg.PKG_DISCONNECT: return new PkgDisconnect(data.substring(2));
+            case NetPkg.PKG_DRAW_CARD: return new PkgDrawCard(data.substring(2));
+            case NetPkg.PKG_FACE_CARD: return new PkgFaceCard(data.substring(2));
+            case NetPkg.PKG_HANDSHAKE: return new PkgHandshake();
+            case NetPkg.PKG_START_GAME: return new PkgStartGame();
+            default: Log.e("Mau","Package type " + type + " not implemented yet...");
+        }
+        return new PkgHandshake();
     }
 
     public synchronized void send(NetPkg pkg) {
-        pkgQueue.offer(pkg);
+        pkgQueue.add(pkg);
     }
 
     public synchronized void addListener(NetListener listener) {

@@ -11,6 +11,10 @@ public class PkgNextTurn implements NetPkg {
         this.playerId = playerId;
     }
 
+    public PkgNextTurn(String input) {
+        playerId = Integer.parseInt(input);
+    }
+
     @Override
     public int getType() {
         return NetPkg.PKG_NEXT_TURN;
@@ -18,6 +22,6 @@ public class PkgNextTurn implements NetPkg {
 
     @Override
     public String serialize() {
-        return null;
+        return "0"+getType() + playerId;
     }
 }

@@ -1,5 +1,6 @@
 package dk.unf.MauMau.network.NetPkg;
 
+import android.util.Log;
 import dk.unf.MauMau.game.Card;
 
 /**
@@ -7,12 +8,22 @@ import dk.unf.MauMau.game.Card;
  */
 public class PkgDrawCard implements NetPkg {
 
-    public final int cardId;
     public final Card card;
 
-    public PkgDrawCard(int cardId, Card card) {
-        this.cardId = cardId;
+    public PkgDrawCard(Card card) {
         this.card = card;
+    }
+
+    public PkgDrawCard(String input) {
+        String[] parts = input.split(":");
+        if (parts.length == 2) {
+            int cardValue = Integer.parseInt(parts[0]);
+            int color = Integer.parseInt(parts[1]);
+            card = new Card(cardValue,color);
+        } else {
+            Log.e("Mau", "Invalid PkgDrawCard " + input);
+            card = new Card(0,0);
+        }
     }
 
     @Override
@@ -22,6 +33,6 @@ public class PkgDrawCard implements NetPkg {
 
     @Override
     public String serialize() {
-        return null;
+        return "0" + getType() + card.cardValue + ":" + card.color;
     }
 }

@@ -42,6 +42,6 @@ public class PkgConnect implements NetPkg {
 
     @Override
     public String serialize() {
-        return null;
+        return "0" + getType() + Boolean.toString(fromServer) + ":" + nickname + ":" + id;
     }
 }
