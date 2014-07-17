@@ -50,7 +50,7 @@ public class MainMenu implements UIState {
             @Override
             public void onClick(Element element) {
                 Log.i("Mau", "Clicked on Join Game");
-                manager.gotoState(CanvasManager.GAME_STATE);
+                manager.gotoState(CanvasManager.JOIN_STATE);
             }
         }));
 
