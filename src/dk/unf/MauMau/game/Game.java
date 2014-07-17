@@ -45,11 +45,6 @@ public class Game implements Runnable, NetListener {
             }
         }
         Collections.shuffle(deck);
-        for (int i = 0; i < 5; i++) {
-            cardsToGive.add(deck.pop());
-        }
-        players.add(new Player(cardsToGive));
-
     }
 
     public void giveCards(Player player, int amount) {
@@ -60,30 +55,12 @@ public class Game implements Runnable, NetListener {
             playerQueue.add(player);
         } else {
             while (amount > 0) {
-                player.cards.add(deck.pop());
+                player.cards.add(deck.remove((int)(Math.random() * deck.size())));
                 amount--;
             }
         }
     }
 
-    public void checkDeck() { //Checks if the deck is empty and if it is puts all the cards from played card except one into the deck
-        if (deck.empty()) {
-            Collections.reverse(playedCards);
-            for (int i = 0; playedCards.size() != 1; i++) {
-                deck.push(playedCards.pop());
-            }
-            Collections.shuffle(deck);
-        }
-    }*/
-
-    private ArrayList<Card> getRandomHand(int size) {
-        ArrayList<Card> hand = new ArrayList<Card>();
-        for (int i = 0; i < size; i++) {
-            hand.add(deck.remove((int)(Math.random() * deck.size())));
-        }
-
-        return hand;
-    }
 
     public Queue<Player> reverseOrder(Queue<Player> queue) {
         Stack<Player> stack = new Stack<Player>();
@@ -171,7 +148,7 @@ public class Game implements Runnable, NetListener {
         playedCard = deck.remove((int)(Math.random() * deck.size()));
         for (Player player : players) {
             server.sendPkg(new PkgStartGame(),player.getId());
-            player.cards = getRandomHand(5);
+            giveCards(player,5);
             for (Card card : player.cards) {
                 server.sendPkg(new PkgDrawCard(card),player.getId());
             }
