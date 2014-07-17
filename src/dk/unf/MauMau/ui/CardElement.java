@@ -1,6 +1,5 @@
 package dk.unf.MauMau.ui;
 
-import android.graphics.Canvas;
 import dk.unf.MauMau.game.Card;
 
 /**
@@ -19,14 +18,28 @@ public class CardElement extends Element {
     }
 
     public CardElement(Card card) {
+        this(card.cardValue, card.color);
+    }
+
+    public CardElement(int value, int color) {
         super(0,0,0,0);
 
-        cardColor = card.color;
-        cardValue = card.cardValue;
+        cardColor = color;
+        cardValue = value;
     }
 
     public Card toCard() {
         return new Card(cardValue,cardColor);
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof CardElement) {
+            CardElement other = (CardElement) o;
+            return (cardValue == other.cardValue && cardColor == other.cardColor);
+        } else {
+            return false;
+        }
+    }
 }

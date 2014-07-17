@@ -137,24 +137,27 @@ public class Game implements Runnable, NetListener {
 
 
     private void throwCard(Card card) {
-        if(playedCard.cardValue == 9 && Settings.usesCustomRules()){
+        if(playedCard.cardValue == 9 && Settings.usesCustomRules()) {
             reversed = true;
-            nextTurn();
-        }else {
-            nextTurn();
         }
+        nextTurn();
         if(playedCard.cardValue != 10 && !Settings.usesCustomRules()) {
             playedCard = card;
         }
         for (Player player : players) {
             server.sendPkg(new PkgFaceCard(card, currentPlayer), player.getId());
         }
-        if(throwableCards(players.get(currentPlayer)).size() == 0){
-            while(throwableCards(players.get(currentPlayer)).size() == 0){
+        ArrayList<Card> throwables = throwableCards(players.get(currentPlayer));
+        if(throwables.size() == 0) {
+            while((throwables = throwableCards(players.get(currentPlayer))).size() == 0){
                 giveCards(players.get(currentPlayer), 1);
                 nextTurn();
             }
+            for (Player player : players) {
+                server.sendPkg(new PkgNextTurn(currentPlayer),player.getId());
+            }
         }
+        server.sendPkg(new PkgAllowedThrows(throwables),players.get(currentPlayer).getId());
     }
 
     private void specialCards (Card card){
@@ -171,8 +174,7 @@ public class Game implements Runnable, NetListener {
         for (int i = 0; i < player.cards.size(); i++) {
             if (playedCard.cardValue == player.cards.get(i).cardValue ||
                     playedCard.color == player.cards.get(i).color ||
-                    playedCard.cardValue != 11 &&
-                    player.cards.get(i).cardValue == 11) {
+                    (playedCard.cardValue != 11 && player.cards.get(i).cardValue == 11)) {
 
                 throwableCards.add(player.cards.get(i));
             }
@@ -194,7 +196,7 @@ public class Game implements Runnable, NetListener {
                 currentPlayer = players.size() - 1;
                 return 0;
             } else {
-                currentPlayer++;
+                currentPlayer--;
                 return currentPlayer;
             }
         }
@@ -207,6 +209,7 @@ public class Game implements Runnable, NetListener {
             giveCards(player, 5);
             server.sendPkg(new PkgFaceCard(playedCard, players.get(0).getId()), player.getId());
         }
+        server.sendPkg(new PkgAllowedThrows(throwableCards(players.get(currentPlayer))),players.get(currentPlayer).getId());
     }
 
     public synchronized void stopGame() {

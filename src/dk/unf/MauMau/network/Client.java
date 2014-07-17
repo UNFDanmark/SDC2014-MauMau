@@ -87,6 +87,7 @@ public class Client {
             case NetPkg.PKG_FACE_CARD: return new PkgFaceCard(data.substring(2));
             case NetPkg.PKG_HANDSHAKE: return new PkgHandshake();
             case NetPkg.PKG_START_GAME: return new PkgStartGame();
+            case NetPkg.PKG_ALLOWED_THROWS: return new PkgAllowedThrows(data.substring(2));
             default: Log.e("Mau","Package type " + type + " not implemented yet...");
         }
         return new PkgHandshake();

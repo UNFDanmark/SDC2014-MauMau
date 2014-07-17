@@ -39,7 +39,7 @@ public class GameRender implements UIState, NetListener {
     List<CardElement> cards = new ArrayList<CardElement>();
     List<CardElement> playedCards = new ArrayList<CardElement>();
     List<PlayerInfo> players = new ArrayList<PlayerInfo>();
-    List<Card> allowedThrows = new ArrayList<Card>();
+    List<CardElement> allowedThrows = new ArrayList<CardElement>();
 
     int currentPlayersTurn;
     int spacing = 100;
@@ -135,10 +135,12 @@ public class GameRender implements UIState, NetListener {
                 for (int i = cards.size(); i > 0; i--) {
                     int a = i * spacing + margin;
                     if (event.x > (a - cardWidth) && event.x < a && event.y > (HEIGHT - 400) && event.y < (HEIGHT - 400) + 200) {
-                        client.send(new PkgThrowCard(cards.get(i - 1).toCard()));
-                        cards.remove(cards.get(i - 1));
-                        yourTurn = false;
-                        return;
+                        if (allowedThrows.contains(cards.get(i - 1))) {
+                            client.send(new PkgThrowCard(cards.get(i - 1).toCard()));
+                            cards.remove(cards.get(i - 1));
+                            yourTurn = false;
+                            return;
+                        }
                     }
                 }
             }
@@ -218,7 +220,7 @@ public class GameRender implements UIState, NetListener {
                 addPlayer((PkgConnect) data);
                 break;
             case NetPkg.PKG_ALLOWED_THROWS:
-                allowedThrows = ((PkgAllowedThrows)data).toArrayList();
+                allowedThrows = ((PkgAllowedThrows)data).toElementArrayList();
                 break;
             default:
                 Log.i("Mau", "Client received unknown package of type: " + data.getType());
