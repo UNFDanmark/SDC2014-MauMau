@@ -5,6 +5,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
+import dk.unf.MauMau.MainActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +28,13 @@ public class AssetLoader {
     private Bitmap cardBack;
     private Bitmap gameBackground;
     private Bitmap mainMenuBackground;
+
+    private Bitmap clubsSuit;
+    private Bitmap diamondsSuit;
+    private Bitmap heartsSuit;
+    private Bitmap spadesSuit;
+
+
 
 
     public void load(Context context) {
@@ -58,6 +66,11 @@ public class AssetLoader {
         gameBackground = getBitmapFromAsset(context, "newBestBackground.png");
         mainMenuBackground = getBitmapFromAsset(context,"MainMenuBackground.png");
         cardBack = scaleDown(getBitmapFromAsset(context, "Red_Back.png"), 200, 0, true, true); //Loads the cardback for the method getFaceDown
+
+        clubsSuit = scaleDown(getBitmapFromAsset(context, "clubs.png"), MainActivity.HEIGHT/2, MainActivity.WIDTH/2, true, false);
+        diamondsSuit = scaleDown(getBitmapFromAsset(context, "diamonds.png"), MainActivity.HEIGHT/2, MainActivity.WIDTH/2, true, false);
+        spadesSuit= scaleDown(getBitmapFromAsset(context, "spades.png"), MainActivity.HEIGHT/2, MainActivity.WIDTH/2, true, false);
+        heartsSuit = scaleDown(getBitmapFromAsset(context, "hearts.png"), MainActivity.HEIGHT/2, MainActivity.WIDTH/2, true, false);
     }
 
     public Bitmap getBackground(int height, int width, int backgroundId){
@@ -103,6 +116,21 @@ public class AssetLoader {
         }
 
         return bitmap;
+    }
+
+    public Bitmap getSuits(int id){
+        switch (id){
+            case(0):
+                return spadesSuit;
+            case(1):
+                return diamondsSuit;
+            case(2):
+                return clubsSuit;
+            case(3):
+                return heartsSuit;
+            default:
+                return null;
+        }
     }
 
     public Bitmap getFaceDown(){ //cardBack is set in load()

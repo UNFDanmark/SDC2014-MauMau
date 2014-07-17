@@ -60,7 +60,7 @@ public class GameRender implements UIState, NetListener {
         } else {
             serverIP = Settings.getServerIP();
         }
-        serverIP = "10.16.111.23";
+        serverIP = "192.168.43.146";
 
         
         client = new Client();
@@ -155,7 +155,15 @@ public class GameRender implements UIState, NetListener {
         for (int i = 0; i < players.size(); i++) {
             canvas.drawText(players.get(i).getNick() + ": " + players.get(i).getId(),50,i*50+200,textPaint);
         }
+        drawJack(canvas);
 
+    }
+
+    public void drawJack(Canvas canvas){
+        canvas.drawBitmap(loader.getSuits(0), 0, 0, null);
+        canvas.drawBitmap(loader.getSuits(1), WIDTH-loader.getSuits(1).getWidth(), 0, null);
+        canvas.drawBitmap(loader.getSuits(2), WIDTH-loader.getSuits(2).getWidth(), HEIGHT-loader.getSuits(2).getHeight(), null);
+        canvas.drawBitmap(loader.getSuits(3), 0, HEIGHT-loader.getSuits(3).getHeight(), null);
     }
 
     @Override
