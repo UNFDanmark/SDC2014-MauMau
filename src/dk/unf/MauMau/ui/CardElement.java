@@ -8,7 +8,7 @@ public class CardElement extends Element {
     int cardColor;
 
 
-    public CardElement(int x, int y, int width, int height, int cardColor, int cardValue) {
+    public CardElement(int x, int y, int width, int height, int cardValue, int cardColor) {
         super(x, y, width, height);
 
         this.cardColor = cardColor;

@@ -43,7 +43,7 @@ public class GameRender implements UIState, NetListener {
         canvasManager = manager;
         loader = manager.getLoader();
 
-        playedCards.add(new CardElement(0,0,0,0,0,12));
+        playedCards.add(new CardElement(0,0,0,0,12,0));
 
     }
 
