@@ -7,11 +7,13 @@ import android.util.Log;
 import dk.unf.MauMau.CanvasManager;
 import dk.unf.MauMau.MainActivity;
 import dk.unf.MauMau.Settings;
+import dk.unf.MauMau.game.Card;
 import dk.unf.MauMau.game.Player;
 import dk.unf.MauMau.network.Client;
 import dk.unf.MauMau.network.NetListener;
 import dk.unf.MauMau.network.NetPkg.*;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,12 +31,16 @@ public class GameRender implements UIState, NetListener {
     private boolean gameRunning = false;
     private boolean gameStarting = false;
     private boolean suitSelect = false;
+
     Client client;
     Paint cardPaint = new Paint();
     Paint textPaint = new Paint();
+
     List<CardElement> cards = new ArrayList<CardElement>();
     List<CardElement> playedCards = new ArrayList<CardElement>();
     List<PlayerInfo> players = new ArrayList<PlayerInfo>();
+    List<Card> allowedThrows = new ArrayList<Card>();
+
     int currentPlayersTurn;
     int spacing = 100;
     int cardWidth = Math.round(200 * 0.7106f);
@@ -163,6 +169,7 @@ public class GameRender implements UIState, NetListener {
         } else if (yourTurn) {
             String text = "Your turn";
             Rect bounds = new Rect();
+
             textPaint.getTextBounds(text, 0, text.length(), bounds);
             canvas.drawText(text, WIDTH / 2 - bounds.width() / 2, HEIGHT / 2, textPaint);
         }
@@ -209,6 +216,9 @@ public class GameRender implements UIState, NetListener {
                 break;
             case NetPkg.PKG_CONNECT:
                 addPlayer((PkgConnect) data);
+                break;
+            case NetPkg.PKG_ALLOWED_THROWS:
+                allowedThrows = ((PkgAllowedThrows)data).toArrayList();
                 break;
             default:
                 Log.i("Mau", "Client received unknown package of type: " + data.getType());
