@@ -21,7 +21,7 @@ public class Game implements Runnable, NetListener {
     private ArrayList<Player> players = new ArrayList<Player>();
     private Queue<NetPkg> pkgQueue = new ConcurrentLinkedQueue<NetPkg>();
     Queue<Player> playerQueue = new PriorityQueue<Player>();
-    
+
 
     private int nextPlayerID = 0;
     private int currentPlayer = 0;
@@ -37,8 +37,8 @@ public class Game implements Runnable, NetListener {
         serverThread.setName("ServerAcceptThread");
         serverThread.start();
 
-        for(int i = 6; i < 13; i++){
-            for(int j = 0; j < 3; j++){
+        for (int i = 6; i < 13; i++) {
+            for (int j = 0; j < 3; j++) {
                 deck.add(new Card(i, j));
             }
         }
@@ -53,7 +53,7 @@ public class Game implements Runnable, NetListener {
             playerQueue.add(player);
         } else {
             while (amount > 0) {
-                player.cards.add(deck.remove((int)(Math.random() * deck.size())));
+                player.cards.add(deck.remove((int) (Math.random() * deck.size())));
                 amount--;
             }
         }
@@ -62,11 +62,11 @@ public class Game implements Runnable, NetListener {
 
     public Queue<Player> reverseOrder(Queue<Player> queue) {
         Stack<Player> stack = new Stack<Player>();
-        while(queue.size() > 0) {
+        while (queue.size() > 0) {
             stack.push(queue.peek());
             queue.remove();
         }
-        while(stack.size() > 0){
+        while (stack.size() > 0) {
             queue.add(stack.pop());
         }
         return queue;
@@ -79,7 +79,7 @@ public class Game implements Runnable, NetListener {
 
     @Override
     public synchronized void received(NetPkg data) {
-       pkgQueue.add(data);
+        pkgQueue.add(data);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class Game implements Runnable, NetListener {
 
     public void run() {
 
-        while(running) {
+        while (running) {
 
             NetPkg pkg;
             while (!pkgQueue.isEmpty()) {
@@ -119,22 +119,36 @@ public class Game implements Runnable, NetListener {
     private void spawnNewPlayer(String nick) {
         Player newPlayer = new Player(nextPlayerID++, nick, new ArrayList<Card>());
         for (Player player : players) {
-            server.sendPkg(new PkgConnect(newPlayer.getNick(),newPlayer.getId()),player.getId());
-            server.sendPkg(new PkgConnect(player.getNick(),player.getId()),newPlayer.getId());
+            server.sendPkg(new PkgConnect(newPlayer.getNick(), newPlayer.getId()), player.getId());
+            server.sendPkg(new PkgConnect(player.getNick(), player.getId()), newPlayer.getId());
         }
-        server.sendPkg(new PkgConnect("#",newPlayer.getId()),newPlayer.getId());
+        server.sendPkg(new PkgConnect("#", newPlayer.getId()), newPlayer.getId());
         players.add(newPlayer);
     }
 
     private void throwCard(Card card) {
         newTurn();
         for (Player player : players) {
-            server.sendPkg(new PkgFaceCard(card,currentPlayer),player.getId());
+            server.sendPkg(new PkgFaceCard(card, currentPlayer), player.getId());
         }
     }
 
+    private ArrayList<Card> throwableCards(Player player, Card card) {
+        ArrayList<Card> throwableCards = new ArrayList<Card>();
+        for (int i = 0; i < player.cards.size(); i++) {
+            if (playedCard.cardValue == player.cards.get(i).cardValue ||
+                    playedCard.color == player.cards.get(i).color &&
+                    playedCard.cardValue == 11 &&
+                    player.cards.get(i).cardValue != 11) {
+
+                throwableCards.add(player.cards.get(i));
+            }
+        }
+        return throwableCards;
+    }
+
     private int newTurn() {
-        if (currentPlayer == players.size()-1) {
+        if (currentPlayer == players.size() - 1) {
             currentPlayer = 0;
             return 0;
         } else {
@@ -144,14 +158,14 @@ public class Game implements Runnable, NetListener {
     }
 
     private void startGame() {
-        playedCard = deck.remove((int)(Math.random() * deck.size()));
+        playedCard = deck.remove((int) (Math.random() * deck.size()));
         for (Player player : players) {
-            server.sendPkg(new PkgStartGame(),player.getId());
-            giveCards(player,5);
+            server.sendPkg(new PkgStartGame(), player.getId());
+            giveCards(player, 5);
             for (Card card : player.cards) {
-                server.sendPkg(new PkgDrawCard(card),player.getId());
+                server.sendPkg(new PkgDrawCard(card), player.getId());
             }
-            server.sendPkg(new PkgFaceCard(playedCard,players.get(0).getId()),player.getId());
+            server.sendPkg(new PkgFaceCard(playedCard, players.get(0).getId()), player.getId());
         }
     }
 
