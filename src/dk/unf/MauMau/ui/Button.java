@@ -33,9 +33,15 @@ public class Button extends Element {
             listener.onClick(this);
         }
     }
+    private int getTextHeight(String text, Paint paint) {
+        Rect bounds = new Rect();
+        paint.getTextBounds(text, 0, text.length(), bounds);
+        int height = bounds.bottom + bounds.height();
+        return height;
+    }
 
     public void draw(Canvas canvas) {
-        canvas.drawText(text,x,y,paint);
+        canvas.drawText(text,x,y + getTextHeight(text, paint),paint);
     }
 
     public void setOnClickListener(OnClickListener listener) {

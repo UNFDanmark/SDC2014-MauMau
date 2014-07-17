@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class GameRender implements UIState, NetListener {
     private final int HEIGHT = MainActivity.HEIGHT;
-    private final int WIDTH = 720;
+    private final int WIDTH = MainActivity.WIDTH;
 
     private String serverIP;
 
@@ -60,7 +60,7 @@ public class GameRender implements UIState, NetListener {
         } else {
             serverIP = Settings.getServerIP();
         }
-        serverIP = "192.168.43.226";
+        serverIP = "10.16.111.23";
 
         
         client = new Client();
