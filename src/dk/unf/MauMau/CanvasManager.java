@@ -25,7 +25,7 @@ public class CanvasManager extends View {
     public final static int SETTINGS_STATE = 3;
 
     private UIState currentState;
-    private UIState[] states = {new MainMenu(),new GameRender()};
+    private UIState[] states = {new MainMenu(), new GameRender(), new JoinMenu()};
 
     public void init(Context context){
         loader.load(context);
