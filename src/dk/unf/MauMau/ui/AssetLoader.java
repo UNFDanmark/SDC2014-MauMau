@@ -120,13 +120,13 @@ public class AssetLoader {
 
     public Bitmap getSuits(int id){
         switch (id){
-            case(0):
-                return spadesSuit;
-            case(1):
-                return diamondsSuit;
             case(2):
-                return clubsSuit;
+                return spadesSuit;
             case(3):
+                return diamondsSuit;
+            case(0):
+                return clubsSuit;
+            case(1):
                 return heartsSuit;
             default:
                 return null;

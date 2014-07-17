@@ -26,6 +26,7 @@ public class GameRender implements UIState, NetListener {
     private CanvasManager canvasManager;
     private boolean gameRunning = false;
     private boolean gameStarting = false;
+    private boolean suitSelect = false;
     Client client;
     Paint cardPaint = new Paint();
     Paint textPaint = new Paint();
@@ -44,7 +45,7 @@ public class GameRender implements UIState, NetListener {
         //All construction code in init()
     }
 
-    public void init(CanvasManager manager){
+    public void init(CanvasManager manager) {
         canvasManager = manager;
         loader = manager.getLoader();
 
@@ -62,7 +63,7 @@ public class GameRender implements UIState, NetListener {
         }
         serverIP = "192.168.43.146";
 
-        
+
         client = new Client();
         client.addListener(this);
         Thread clientThread = new Thread(new Runnable() {
@@ -82,7 +83,7 @@ public class GameRender implements UIState, NetListener {
         clientThread.setName("ClientSocketTickerThread");
         clientThread.start();
 
-        margin = WIDTH/2 - (spacing * (5 - 1) + cardWidth)/2;
+        margin = WIDTH / 2 - (spacing * (5 - 1) + cardWidth) / 2;
     }
 
     @Override
@@ -97,7 +98,7 @@ public class GameRender implements UIState, NetListener {
             if (Settings.getRunningHost() && !gameRunning) {
                 Log.i("Mau", "Starting game");
                 client.send(new PkgStartGame());
-                Log.i("Mau","Told server to start");
+                Log.i("Mau", "Told server to start");
                 gameRunning = true;
                 gameStarting = true;
             }
@@ -110,32 +111,45 @@ public class GameRender implements UIState, NetListener {
 
     }
 
+
     public void checkClick(InputEvent event) {
-        if (yourTurn) {
-            for(int i = cards.size(); i > 0; i--){
-                int a = i*spacing+margin;
-                if (event.x > (a - cardWidth) && event.x < a && event.y > (HEIGHT-400) && event.y < (HEIGHT-400) + 200) {
-                    client.send(new PkgThrowCard(cards.get(i-1).toCard()));
-                    cards.remove(cards.get(i-1));
-                    yourTurn = false;
-                    return;
+        if (suitSelect) {
+            if (event.x < WIDTH / 2 && event.y < HEIGHT / 2) { //clubs
+                System.out.println("Clubs");
+            } else if (event.x > WIDTH / 2 && event.y < HEIGHT / 2) { //hearts
+                System.out.println("Hearts");
+            } else if (event.x < WIDTH / 2 && event.y > HEIGHT / 2) { //diamonds
+                System.out.println("Diamonds");
+            } else if (event.x > WIDTH / 2 && event.y > HEIGHT / 2) { //spades
+                System.out.println("Spades");
+            }
+        } else {
+            if (yourTurn) {
+                for (int i = cards.size(); i > 0; i--) {
+                    int a = i * spacing + margin;
+                    if (event.x > (a - cardWidth) && event.x < a && event.y > (HEIGHT - 400) && event.y < (HEIGHT - 400) + 200) {
+                        client.send(new PkgThrowCard(cards.get(i - 1).toCard()));
+                        cards.remove(cards.get(i - 1));
+                        yourTurn = false;
+                        return;
+                    }
                 }
             }
         }
     }
 
-    public void draw(Canvas canvas){
+    public void draw(Canvas canvas) {
         canvas.drawBitmap(loader.getBackground(HEIGHT, WIDTH, 0), 0, 0, null);
         cardPaint.setColor(Color.RED);
-        for(int i = 0; i < cards.size(); i++){
+        for (int i = 0; i < cards.size(); i++) {
             Bitmap card = loader.getCard(cards.get(i).cardValue, cards.get(i).cardColor);
-            canvas.drawBitmap(card, i*spacing+margin, HEIGHT-400, null);
+            canvas.drawBitmap(card, i * spacing + margin, HEIGHT - 400, null);
         }
         for (int i = 0; i < 10; i++) { //Show the deck
-            canvas.drawBitmap(loader.getFaceDown(), WIDTH / 2 - loader.getFaceDown().getWidth() / 2, 20+i*5, null);
+            canvas.drawBitmap(loader.getFaceDown(), WIDTH / 2 - loader.getFaceDown().getWidth() / 2, 20 + i * 5, null);
         }
 
-        for( int i = 0; i < playedCards.size(); i ++) { //Show played cards
+        for (int i = 0; i < playedCards.size(); i++) { //Show played cards
             Bitmap card = loader.getCard(playedCards.get(i).cardValue, playedCards.get(i).cardColor);
             canvas.drawBitmap(card, WIDTH / 2 - card.getWidth() / 2, 320, null);
         }
@@ -143,40 +157,57 @@ public class GameRender implements UIState, NetListener {
         if (gameStarting) {
             String text = "Game starting...";
             Rect bounds = new Rect();
-            textPaint.getTextBounds(text,0,text.length(),bounds);
-            canvas.drawText(text,WIDTH/2 - bounds.width()/2,HEIGHT/2,textPaint);
+            textPaint.getTextBounds(text, 0, text.length(), bounds);
+            canvas.drawText(text, WIDTH / 2 - bounds.width() / 2, HEIGHT / 2, textPaint);
         } else if (yourTurn) {
             String text = "Your turn";
             Rect bounds = new Rect();
-            textPaint.getTextBounds(text,0,text.length(),bounds);
-            canvas.drawText(text,WIDTH/2 - bounds.width()/2,HEIGHT/2,textPaint);
+            textPaint.getTextBounds(text, 0, text.length(), bounds);
+            canvas.drawText(text, WIDTH / 2 - bounds.width() / 2, HEIGHT / 2, textPaint);
         }
 
         for (int i = 0; i < players.size(); i++) {
-            canvas.drawText(players.get(i).getNick() + ": " + players.get(i).getId(),50,i*50+200,textPaint);
+            canvas.drawText(players.get(i).getNick() + ": " + players.get(i).getId(), 50, i * 50 + 200, textPaint);
         }
-        drawJack(canvas);
+        if(playedCards.size() > 0 && playedCards.get(playedCards.size()).cardValue == 11){
+            drawJack(canvas);
+        }
 
     }
 
-    public void drawJack(Canvas canvas){
+    public void drawJack(Canvas canvas) {
         canvas.drawBitmap(loader.getSuits(0), 0, 0, null);
-        canvas.drawBitmap(loader.getSuits(1), WIDTH-loader.getSuits(1).getWidth(), 0, null);
-        canvas.drawBitmap(loader.getSuits(2), WIDTH-loader.getSuits(2).getWidth(), HEIGHT-loader.getSuits(2).getHeight(), null);
-        canvas.drawBitmap(loader.getSuits(3), 0, HEIGHT-loader.getSuits(3).getHeight(), null);
+        canvas.drawBitmap(loader.getSuits(1), WIDTH - loader.getSuits(1).getWidth(), 0, null);
+        canvas.drawBitmap(loader.getSuits(2), WIDTH - loader.getSuits(2).getWidth(), HEIGHT - loader.getSuits(2).getHeight(), null);
+        canvas.drawBitmap(loader.getSuits(3), 0, HEIGHT - loader.getSuits(3).getHeight(), null);
     }
 
     @Override
     public synchronized void received(NetPkg data) {
 
         switch (data.getType()) {
-            case NetPkg.PKG_DRAW_CARD: cards.add(new CardElement(((PkgDrawCard) data).card)); break;
-            case NetPkg.PKG_FACE_CARD: playedCards.add(new CardElement(((PkgFaceCard) data).card)); nextTurn(((PkgFaceCard) data).nextPlayer); break;
-            case NetPkg.PKG_NEXT_TURN: nextTurn(((PkgNextTurn) data).playerId); break;
-            case NetPkg.PKG_HANDSHAKE: if (!gameRunning) client.send(new PkgConnect("Player",-1)); break;
-            case NetPkg.PKG_START_GAME: gameRunning = true; gameStarting = false; break;
-            case NetPkg.PKG_CONNECT: addPlayer((PkgConnect) data); break;
-            default: Log.i("Mau", "Client received unknown package of type: " + data.getType());
+            case NetPkg.PKG_DRAW_CARD:
+                cards.add(new CardElement(((PkgDrawCard) data).card));
+                break;
+            case NetPkg.PKG_FACE_CARD:
+                playedCards.add(new CardElement(((PkgFaceCard) data).card));
+                nextTurn(((PkgFaceCard) data).nextPlayer);
+                break;
+            case NetPkg.PKG_NEXT_TURN:
+                nextTurn(((PkgNextTurn) data).playerId);
+                break;
+            case NetPkg.PKG_HANDSHAKE:
+                if (!gameRunning) client.send(new PkgConnect("Player", -1));
+                break;
+            case NetPkg.PKG_START_GAME:
+                gameRunning = true;
+                gameStarting = false;
+                break;
+            case NetPkg.PKG_CONNECT:
+                addPlayer((PkgConnect) data);
+                break;
+            default:
+                Log.i("Mau", "Client received unknown package of type: " + data.getType());
         }
         canvasManager.postInvalidate();
 
@@ -184,7 +215,7 @@ public class GameRender implements UIState, NetListener {
 
     private void nextTurn(int nextId) {
         currentPlayersTurn = nextId;
-        Log.i("Mau","Now player " + currentPlayersTurn + "s turn");
+        Log.i("Mau", "Now player " + currentPlayersTurn + "s turn");
         if (currentPlayersTurn == yourId) {
             yourTurn = true;
         }
@@ -194,7 +225,7 @@ public class GameRender implements UIState, NetListener {
         if (data.nickname.equalsIgnoreCase("#")) {
             yourId = data.id;
         } else {
-            players.add(new PlayerInfo(data.id,data.nickname));
+            players.add(new PlayerInfo(data.id, data.nickname));
         }
     }
 
