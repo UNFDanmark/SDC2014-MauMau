@@ -153,15 +153,23 @@ public class GameRender implements UIState, NetListener {
 
         switch (data.getType()) {
             case NetPkg.PKG_DRAW_CARD: cards.add(new CardElement(((PkgDrawCard) data).card)); break;
-            case NetPkg.PKG_FACE_CARD: playedCards.add(new CardElement(((PkgFaceCard) data).card)); currentPlayersTurn = ((PkgFaceCard) data).nextPlayer; break;
-            case NetPkg.PKG_NEXT_TURN: currentPlayersTurn = ((PkgNextTurn) data).playerId; break;
+            case NetPkg.PKG_FACE_CARD: playedCards.add(new CardElement(((PkgFaceCard) data).card)); nextTurn(((PkgFaceCard) data).nextPlayer); break;
+            case NetPkg.PKG_NEXT_TURN: nextTurn(((PkgNextTurn) data).playerId); break;
             case NetPkg.PKG_HANDSHAKE: if (!gameRunning) client.send(new PkgConnect("Player",-1)); break;
             case NetPkg.PKG_START_GAME: gameRunning = true; gameStarting = false; break;
-            case NetPkg.PKG_CONNECT:  break;
+            case NetPkg.PKG_CONNECT: addPlayer((PkgConnect) data); break;
             default: Log.i("Mau", "Client received unknown package of type: " + data.getType());
         }
         canvasManager.postInvalidate();
 
+    }
+
+    private void nextTurn(int nextId) {
+        currentPlayersTurn = nextId;
+        Log.i("Mau","Now player " + currentPlayersTurn + "s turn");
+        if (currentPlayersTurn == yourId) {
+            yourTurn = true;
+        }
     }
 
     private void addPlayer(PkgConnect data) {

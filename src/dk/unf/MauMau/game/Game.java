@@ -7,7 +7,6 @@ import dk.unf.MauMau.network.Server;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.SynchronousQueue;
 
 /**
  * Created by sdc on 7/15/14.
@@ -21,7 +20,6 @@ public class Game implements Runnable, NetListener {
     private Card playedCard;
     private ArrayList<Player> players = new ArrayList<Player>();
     private Queue<NetPkg> pkgQueue = new ConcurrentLinkedQueue<NetPkg>();
-    ArrayList<Card> cardsToGive = new ArrayList<Card>();
     Queue<Player> playerQueue = new PriorityQueue<Player>();
     
 
@@ -129,13 +127,14 @@ public class Game implements Runnable, NetListener {
     }
 
     private void throwCard(Card card) {
+        newTurn();
         for (Player player : players) {
-            server.sendPkg(new PkgFaceCard(card,getNextPlayerID()),player.getId());
+            server.sendPkg(new PkgFaceCard(card,currentPlayer),player.getId());
         }
     }
 
-    private int getNextPlayerID() {
-        if (currentPlayer == players.size()) {
+    private int newTurn() {
+        if (currentPlayer == players.size()-1) {
             currentPlayer = 0;
             return 0;
         } else {
