@@ -143,13 +143,16 @@ public class Game implements Runnable, NetListener {
         }else {
             nextTurn();
         }
+        if(playedCard.cardValue != 10 && !Settings.usesCustomRules()) {
+            playedCard = card;
+        }
         for (Player player : players) {
             server.sendPkg(new PkgFaceCard(card, currentPlayer), player.getId());
         }
         if(throwableCards(players.get(currentPlayer)).size() == 0){
             while(throwableCards(players.get(currentPlayer)).size() == 0){
-                nextTurn();
                 giveCards(players.get(currentPlayer), 1);
+                nextTurn();
             }
         }
     }
@@ -157,6 +160,7 @@ public class Game implements Runnable, NetListener {
     private void specialCards (Card card){
         if(playedCard.cardValue == 7 && throwableCards(players.get(currentPlayer)).size() > 0){
             giveCards(players.get(currentPlayer), 2);
+            nextTurn();
         }else if(playedCard.cardValue == 8 && throwableCards(players.get(currentPlayer)).size() > 0){
             nextTurn();
         }
