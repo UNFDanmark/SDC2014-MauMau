@@ -98,7 +98,7 @@ public class MainMenu implements UIState {
     }
 
     private Button spawnButton(String text, int num, OnClickListener listener) {
-        Button button = new Button(text,WIDTH/2 - BUTTON_WIDTH/2, TOP_MARGIN + SPACING * num, BUTTON_WIDTH, BUTTON_HEIGHT);
+        Button button = new Button(text,WIDTH/2, TOP_MARGIN + SPACING * num, BUTTON_WIDTH, BUTTON_HEIGHT);
         button.setOnClickListener(listener);
         return button;
     }

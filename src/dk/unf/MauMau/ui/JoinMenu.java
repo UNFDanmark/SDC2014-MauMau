@@ -57,7 +57,8 @@ public class JoinMenu implements UIState {
     public void init(final CanvasManager manager) {
         this.manager = manager;
         loader = manager.getLoader();
-        startButton = new Button("Start game",WIDTH/2 - BUTTON_WIDTH/2, HEIGHT-BOTTOM_MARGIN , BUTTON_WIDTH, BUTTON_HEIGHT);
+        startButton = new Button("Start game",WIDTH/2 - BUTTON_WIDTH/2, 500 , BUTTON_WIDTH, BUTTON_HEIGHT);
+
         startButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(Element element) {

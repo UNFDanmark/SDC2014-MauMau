@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import dk.unf.MauMau.MainActivity;
 
 /**
  * Created by sdc on 7/16/14.
@@ -33,15 +34,21 @@ public class Button extends Element {
             listener.onClick(this);
         }
     }
-    private int getTextHeight(String text, Paint paint) {
+    private int getTextHeight() {
         Rect bounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), bounds);
         int height = bounds.bottom + bounds.height();
         return height;
     }
+    private int getTextWidth() {
+        Rect bounds = new Rect();
+        paint.getTextBounds(text, 0, text.length(), bounds);
+        int height = bounds.right + bounds.height();
+        return height;
+    }
 
     public void draw(Canvas canvas) {
-        canvas.drawText(text,x,y + getTextHeight(text, paint),paint);
+        canvas.drawText(text, MainActivity.WIDTH/2,y + getTextHeight(),paint);
     }
 
     public void setOnClickListener(OnClickListener listener) {

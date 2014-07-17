@@ -1,6 +1,8 @@
 package dk.unf.MauMau.ui;
 
+import android.content.Context;
 import android.graphics.*;
+import android.os.Vibrator;
 import android.util.Log;
 import dk.unf.MauMau.CanvasManager;
 import dk.unf.MauMau.MainActivity;
@@ -37,6 +39,7 @@ public class GameRender implements UIState, NetListener {
     int spacing = 100;
     int cardWidth = Math.round(200 * 0.7106f);
     int margin;
+    Vibrator v;
 
     private boolean yourTurn = false;
     private int yourId = 0;
@@ -51,7 +54,7 @@ public class GameRender implements UIState, NetListener {
 
         textPaint.setTextSize(40);
         textPaint.setColor(Color.WHITE);
-
+        v = (Vibrator) manager.getContext().getSystemService(Context.VIBRATOR_SERVICE);
     }
 
     @Override
@@ -113,13 +116,13 @@ public class GameRender implements UIState, NetListener {
     public void checkClick(InputEvent event) {
         if (suitSelect) {
             if (event.x < WIDTH / 2 && event.y < HEIGHT / 2) { //clubs
-                System.out.println("Clubs");
+
             } else if (event.x > WIDTH / 2 && event.y < HEIGHT / 2) { //hearts
-                System.out.println("Hearts");
+
             } else if (event.x < WIDTH / 2 && event.y > HEIGHT / 2) { //diamonds
-                System.out.println("Diamonds");
+
             } else if (event.x > WIDTH / 2 && event.y > HEIGHT / 2) { //spades
-                System.out.println("Spades");
+
             }
         } else {
             if (yourTurn) {
@@ -167,8 +170,10 @@ public class GameRender implements UIState, NetListener {
         for (int i = 0; i < players.size(); i++) {
             canvas.drawText(players.get(i).getNick() + ": " + players.get(i).getId(), 50, i * 50 + 200, textPaint);
         }
-        if(playedCards.size() > 0 && playedCards.get(playedCards.size()).cardValue == 11){
+        if(playedCards.size() > 0 && playedCards.get(playedCards.size()-1).cardValue == 11){
+            suitSelect = true;
             drawJack(canvas);
+
         }
 
     }
@@ -186,6 +191,7 @@ public class GameRender implements UIState, NetListener {
         switch (data.getType()) {
             case NetPkg.PKG_DRAW_CARD:
                 cards.add(new CardElement(((PkgDrawCard) data).card));
+                v.vibrate(500);
                 break;
             case NetPkg.PKG_FACE_CARD:
                 playedCards.add(new CardElement(((PkgFaceCard) data).card));
