@@ -7,6 +7,7 @@ public class Settings {
 
     private static volatile String ip;
     private static volatile String serverIP;
+    private static volatile boolean customRules = false;
     private static volatile boolean runningHost = false;
 
     public static synchronized String getIP() {
@@ -31,5 +32,13 @@ public class Settings {
 
     public static synchronized void setServerIP(String ip) {
         serverIP = ip;
+    }
+
+    public static synchronized boolean usesCustomRules() {
+        return customRules;
+    }
+
+    public static synchronized void setCustomRules(boolean customRules) {
+        Settings.customRules = customRules;
     }
 }

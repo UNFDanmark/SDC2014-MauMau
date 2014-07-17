@@ -1,6 +1,7 @@
 package dk.unf.MauMau.game;
 
 import android.util.Log;
+import dk.unf.MauMau.Settings;
 import dk.unf.MauMau.network.NetListener;
 import dk.unf.MauMau.network.NetPkg.*;
 import dk.unf.MauMau.network.Server;
@@ -21,6 +22,7 @@ public class Game implements Runnable, NetListener {
     private ArrayList<Player> players = new ArrayList<Player>();
     private Queue<NetPkg> pkgQueue = new ConcurrentLinkedQueue<NetPkg>();
     Queue<Player> playerQueue = new PriorityQueue<Player>();
+    private boolean reversed;
 
 
     private int nextPlayerID = 0;
@@ -52,11 +54,17 @@ public class Game implements Runnable, NetListener {
         if (deck.size() < amount) {
             playerQueue.add(player);
         } else {
+            ArrayList<Card> cards = new ArrayList<Card>();
             while (amount > 0) {
-                player.cards.add(deck.remove((int) (Math.random() * deck.size())));
+                cards.add(deck.remove((int) (Math.random() * deck.size())));
                 amount--;
             }
+            for (Card card : cards) {
+                server.sendPkg(new PkgDrawCard(card), player.getId());
+                player.cards.add(card);
+            }
         }
+
     }
 
 
@@ -113,7 +121,7 @@ public class Game implements Runnable, NetListener {
             }
         }
 
-        Log.i("Mau", "Game dying");
+        Log.i("Mau", "Game dying. Send help");
     }
 
     private void spawnNewPlayer(String nick) {
@@ -126,20 +134,41 @@ public class Game implements Runnable, NetListener {
         players.add(newPlayer);
     }
 
+
+
     private void throwCard(Card card) {
-        newTurn();
+        if(playedCard.cardValue == 9 && Settings.usesCustomRules()){
+            reversed = true;
+            nextTurn();
+        }else {
+            nextTurn();
+        }
         for (Player player : players) {
             server.sendPkg(new PkgFaceCard(card, currentPlayer), player.getId());
         }
+        if(throwableCards(players.get(currentPlayer)).size() == 0){
+            while(throwableCards(players.get(currentPlayer)).size() == 0){
+                nextTurn();
+                giveCards(players.get(currentPlayer), 1);
+            }
+        }
     }
 
-    private ArrayList<Card> throwableCards(Player player, Card card) {
+    private void specialCards (Card card){
+        if(playedCard.cardValue == 7 && throwableCards(players.get(currentPlayer)).size() > 0){
+            giveCards(players.get(currentPlayer), 2);
+        }else if(playedCard.cardValue == 8 && throwableCards(players.get(currentPlayer)).size() > 0){
+            nextTurn();
+        }
+    }
+
+    private ArrayList<Card> throwableCards(Player player) {
         ArrayList<Card> throwableCards = new ArrayList<Card>();
         for (int i = 0; i < player.cards.size(); i++) {
             if (playedCard.cardValue == player.cards.get(i).cardValue ||
-                    playedCard.color == player.cards.get(i).color &&
-                    playedCard.cardValue == 11 &&
-                    player.cards.get(i).cardValue != 11) {
+                    playedCard.color == player.cards.get(i).color ||
+                    playedCard.cardValue != 11 &&
+                    player.cards.get(i).cardValue == 11) {
 
                 throwableCards.add(player.cards.get(i));
             }
@@ -147,13 +176,23 @@ public class Game implements Runnable, NetListener {
         return throwableCards;
     }
 
-    private int newTurn() {
-        if (currentPlayer == players.size() - 1) {
-            currentPlayer = 0;
-            return 0;
+    private int nextTurn() {
+        if (!reversed) {
+            if (currentPlayer == players.size() - 1) {
+                currentPlayer = 0;
+                return 0;
+            } else {
+                currentPlayer++;
+                return currentPlayer;
+            }
         } else {
-            currentPlayer++;
-            return currentPlayer;
+            if (currentPlayer == 0) {
+                currentPlayer = players.size() - 1;
+                return 0;
+            } else {
+                currentPlayer++;
+                return currentPlayer;
+            }
         }
     }
 
@@ -162,9 +201,6 @@ public class Game implements Runnable, NetListener {
         for (Player player : players) {
             server.sendPkg(new PkgStartGame(), player.getId());
             giveCards(player, 5);
-            for (Card card : player.cards) {
-                server.sendPkg(new PkgDrawCard(card), player.getId());
-            }
             server.sendPkg(new PkgFaceCard(playedCard, players.get(0).getId()), player.getId());
         }
     }
