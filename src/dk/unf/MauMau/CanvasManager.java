@@ -7,6 +7,8 @@ import android.view.View;
 import dk.unf.MauMau.game.Game;
 import dk.unf.MauMau.ui.*;
 
+import java.util.Set;
+
 /**
  * Created by sdc on 7/15/14.
  */
@@ -14,7 +16,8 @@ public class CanvasManager extends View {
 
     private final int WIDTH = 720;
 
-    AssetLoader loader = new AssetLoader();
+    private AssetLoader loader = new AssetLoader();
+    private MainActivity mainActivity;
 
     //No other place to put it?
     private Game game;
@@ -66,8 +69,9 @@ public class CanvasManager extends View {
         return loader;
     }
 
-    public CanvasManager(Context context) {
-        super(context);
+    public CanvasManager(MainActivity main) {
+        super(main.getApplicationContext());
+        mainActivity = main;
     }
 
     void onTouchEvent(InputEvent event) {
@@ -80,6 +84,20 @@ public class CanvasManager extends View {
         gameServerThread.setName("GameServerThread");
         gameServerThread.start();
         Settings.setRunningHost(true);
+    }
+
+    public void showTextEdits() {
+        mainActivity.getIpField().setVisibility(View.VISIBLE);
+        mainActivity.getNickField().setVisibility(View.VISIBLE);
+    }
+
+    public void hideTextEdits() {
+        mainActivity.getIpField().setVisibility(View.INVISIBLE);
+        mainActivity.getNickField().setVisibility(View.INVISIBLE);
+    }
+
+    public void saveTextEdits() {
+        Settings.setServerIP(mainActivity.getIpField().getText().toString().trim());
     }
 
 }
