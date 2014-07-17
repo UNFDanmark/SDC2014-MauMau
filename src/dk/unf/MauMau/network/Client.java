@@ -1,10 +1,7 @@
 package dk.unf.MauMau.network;
 
 import android.util.Log;
-import dk.unf.MauMau.network.NetPkg.NetPkg;
-import dk.unf.MauMau.network.NetPkg.PkgConnect;
-import dk.unf.MauMau.network.NetPkg.PkgDrawCard;
-import dk.unf.MauMau.network.NetPkg.PkgHandshake;
+import dk.unf.MauMau.network.NetPkg.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,10 +30,10 @@ public class Client {
         pkgQueue = new ConcurrentLinkedQueue<NetPkg>();
     }
 
-    public synchronized boolean connect() {
+    public synchronized boolean connect(String ip) {
         try {
             Log.i("Mau","About to create socket!");
-            socket = new Socket(InetAddress.getByName("192.168.43.226"),8080);
+            socket = new Socket(InetAddress.getByName(ip),8080);
             if (socket.isConnected()) {
                 Log.i("Mau", "Successfully connected!");
                 running = true;
@@ -87,7 +84,9 @@ public class Client {
             case NetPkg.PKG_CONNECT: return new PkgConnect(data.substring(2));
             //case NetPkg.PKG_DISCONNECT: return new PkgDisconnect(data.substring(2));
             case NetPkg.PKG_DRAW_CARD: return new PkgDrawCard(data.substring(2));
+            case NetPkg.PKG_FACE_CARD: return new PkgFaceCard(data.substring(2));
             case NetPkg.PKG_HANDSHAKE: return new PkgHandshake();
+            case NetPkg.PKG_START_GAME: return new PkgStartGame();
             default: Log.e("Mau","Package type " + type + " not implemented yet...");
         }
         return new PkgHandshake();

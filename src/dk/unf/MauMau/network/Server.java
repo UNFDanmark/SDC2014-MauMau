@@ -124,8 +124,9 @@ public class Server implements Runnable {
             int type = Integer.parseInt(data.substring(0,2));
             switch (type) {
                 case NetPkg.PKG_CONNECT: return new PkgConnect(data.substring(2));
+                case NetPkg.PKG_START_GAME: return new PkgStartGame();
+                case NetPkg.PKG_THROW_CARD: return new PkgThrowCard(data.substring(2));
                 //case NetPkg.PKG_DISCONNECT: return new PkgDisconnect(data.substring(2));
-                //case NetPkg.PKG_DRAW_CARD: return new PkgDrawCard(data.substring(2));
                 default: Log.e("Mau","Package type " + type + " not implemented yet...");
             }
             return new PkgHandshake();

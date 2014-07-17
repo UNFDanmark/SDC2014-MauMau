@@ -21,7 +21,7 @@ public class PkgDrawCard implements NetPkg {
             int color = Integer.parseInt(parts[1]);
             card = new Card(cardValue,color);
         } else {
-            Log.e("Mau", "Invalid PkgConnect " + input);
+            Log.e("Mau", "Invalid PkgDrawCard " + input);
             card = new Card(0,0);
         }
     }

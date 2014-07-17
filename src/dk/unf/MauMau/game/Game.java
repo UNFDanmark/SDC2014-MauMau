@@ -2,9 +2,7 @@ package dk.unf.MauMau.game;
 
 import android.util.Log;
 import dk.unf.MauMau.network.NetListener;
-import dk.unf.MauMau.network.NetPkg.NetPkg;
-import dk.unf.MauMau.network.NetPkg.PkgConnect;
-import dk.unf.MauMau.network.NetPkg.PkgDrawCard;
+import dk.unf.MauMau.network.NetPkg.*;
 import dk.unf.MauMau.network.Server;
 
 import java.util.*;
@@ -20,11 +18,12 @@ public class Game implements Runnable, NetListener {
     private volatile boolean running = true;
 
     private ArrayList<Card> deck = new ArrayList<Card>();
-    private Stack<Card> playedCards = new Stack<Card>();
+    private Card playedCard;
     private ArrayList<Player> players = new ArrayList<Player>();
     private Queue<NetPkg> pkgQueue = new ConcurrentLinkedQueue<NetPkg>();
 
     private int nextPlayerID = 0;
+    private int currentPlayer = 0;
 
     public ArrayList<Player> getPlayers() {
         return players;
@@ -65,10 +64,6 @@ public class Game implements Runnable, NetListener {
         return hand;
     }
 
-    public void playCard(Card card){
-        playedCards.push(card);
-    }
-
     @Override
     public synchronized void received(NetPkg data) {
        pkgQueue.add(data);
@@ -89,8 +84,13 @@ public class Game implements Runnable, NetListener {
 
                 if (pkg.getType() == NetPkg.PKG_CONNECT) {
                     spawnNewPlayer(((PkgConnect) pkg).nickname);
+                } else if (pkg.getType() == NetPkg.PKG_THROW_CARD) {
+                    PkgThrowCard nPkg = (PkgThrowCard) pkg;
+                    players.get(currentPlayer).cards.remove(nPkg.card);
+                    throwCard(nPkg.card);
+                } else if (pkg.getType() == NetPkg.PKG_START_GAME) {
+                    startGame();
                 }
-
             }
 
             try {
@@ -104,11 +104,40 @@ public class Game implements Runnable, NetListener {
     }
 
     private void spawnNewPlayer(String nick) {
-        ArrayList<Card> cards = getRandomHand(5);
-        Player player = new Player(nextPlayerID++, nick, cards);
-        players.add(player);
-        for (Card card : cards) {
-            server.sendPkg(new PkgDrawCard(card),player.getId());
+        Player newPlayer = new Player(nextPlayerID++, nick, new ArrayList<Card>());
+        for (Player player : players) {
+            server.sendPkg(new PkgConnect(newPlayer.getNick(),newPlayer.getId()),player.getId());
+            server.sendPkg(new PkgConnect(player.getNick(),player.getId()),newPlayer.getId());
+        }
+        server.sendPkg(new PkgConnect("#",newPlayer.getId()),newPlayer.getId());
+        players.add(newPlayer);
+    }
+
+    private void throwCard(Card card) {
+        for (Player player : players) {
+            server.sendPkg(new PkgFaceCard(card,getNextPlayerID()),player.getId());
+        }
+    }
+
+    private int getNextPlayerID() {
+        if (currentPlayer == players.size()) {
+            currentPlayer = 0;
+            return 0;
+        } else {
+            currentPlayer++;
+            return currentPlayer;
+        }
+    }
+
+    private void startGame() {
+        playedCard = deck.remove((int)(Math.random() * deck.size()));
+        for (Player player : players) {
+            server.sendPkg(new PkgStartGame(),player.getId());
+            player.cards = getRandomHand(5);
+            for (Card card : player.cards) {
+                server.sendPkg(new PkgDrawCard(card),player.getId());
+            }
+            server.sendPkg(new PkgFaceCard(playedCard,players.get(0).getId()),player.getId());
         }
     }
 

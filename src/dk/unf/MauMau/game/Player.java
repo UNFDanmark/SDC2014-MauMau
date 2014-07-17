@@ -9,7 +9,7 @@ public class Player {
 
     private int id;
     private String nick;
-    private ArrayList<Card> cards = new ArrayList<Card>();
+    public ArrayList<Card> cards = new ArrayList<Card>();
 
     public Player(int id, String nick, ArrayList<Card> cards) {
         this.id = id;
@@ -19,5 +19,9 @@ public class Player {
 
     public int getId() {
         return id;
+    }
+
+    public String getNick() {
+        return nick;
     }
 }

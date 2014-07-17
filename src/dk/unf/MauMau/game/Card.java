@@ -13,4 +13,14 @@ public class Card {
         this.color = color;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Card) {
+            Card c = (Card) o;
+            return (c.cardValue == cardValue && c.color == color);
+        } else {
+            return false;
+        }
+    }
 }
