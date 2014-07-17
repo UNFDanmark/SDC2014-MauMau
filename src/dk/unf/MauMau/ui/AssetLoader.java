@@ -38,7 +38,7 @@ public class AssetLoader {
             for (int k = 0; k < 4; k++) {
                 Bitmap bitmap = getBitmapFromAsset(context,  "c" + j + getLetter(k)+".png");
                 System.out.println("c" + j + getLetter(k)+".png");
-                bitmap = scaleDown(bitmap, 200, true, true);
+                bitmap = scaleDown(bitmap, 200, 0, true, true);
                 switch (k) {
                     case HEARTS_ID:
                         heartsBitmaps.put(j, bitmap);
@@ -57,15 +57,15 @@ public class AssetLoader {
         }
         gameBackground = getBitmapFromAsset(context, "newBestBackground.png");
         mainMenuBackground = getBitmapFromAsset(context,"MainMenuBackground.png");
-        cardBack = scaleDown(getBitmapFromAsset(context, "Red_Back.png"), 200, true, true); //Loads the cardback for the method getFaceDown
+        cardBack = scaleDown(getBitmapFromAsset(context, "Red_Back.png"), 200, 0, true, true); //Loads the cardback for the method getFaceDown
     }
 
-    public Bitmap getBackground(int height, int backgroundId){
+    public Bitmap getBackground(int height, int width, int backgroundId){
         switch(backgroundId){
             case 0:
-                return scaleDown(gameBackground,height,true, false);
+                return scaleDown(gameBackground, height, width, true, false);
             case 1:
-                return scaleDown(mainMenuBackground,height,true, false);
+                return scaleDown(mainMenuBackground, height, width, true, false);
             default:
                 return null;
         }
@@ -109,7 +109,7 @@ public class AssetLoader {
         return cardBack;
     }
 
-    public Bitmap scaleDown(Bitmap realImage, float maxImageSize,
+    public Bitmap scaleDown(Bitmap realImage, float maxImageSize, int newWidth,
                                    boolean filter, boolean keepRatio) { //Scales down an image to a specific height
         float ratio = Math.min(
                 maxImageSize / realImage.getWidth(),
@@ -117,7 +117,7 @@ public class AssetLoader {
         int width = Math.round(ratio * realImage.getWidth());
         int height = Math.round(ratio * realImage.getHeight());
         if(!keepRatio){
-            Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, realImage.getWidth(),
+            Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, newWidth,
                     height, filter);
             return newBitmap;
         }else {

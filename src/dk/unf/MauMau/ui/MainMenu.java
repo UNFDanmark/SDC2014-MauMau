@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 public class MainMenu implements UIState {
 
-    private static final int WIDTH = 720;
+    private static final int WIDTH = MainActivity.WIDTH;
     private static final int HEIGHT = MainActivity.HEIGHT;
 
     private static final int BUTTON_WIDTH = 400;
@@ -81,7 +81,7 @@ public class MainMenu implements UIState {
 
     @Override
     public void draw(Canvas canvas) {
-        canvas.drawBitmap(loader.getBackground(HEIGHT, 1),0,0,null);
+        canvas.drawBitmap(loader.getBackground(HEIGHT, WIDTH, 1),0,0,null);
 
         for (Button button : buttons) {
             button.draw(canvas);

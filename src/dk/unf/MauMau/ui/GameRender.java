@@ -92,7 +92,7 @@ public class GameRender implements UIState, NetListener {
     }
 
     public void draw(Canvas canvas){
-        canvas.drawBitmap(loader.getBackground(HEIGHT, 0), 0, 0, null);
+        canvas.drawBitmap(loader.getBackground(HEIGHT, WIDTH, 0), 0, 0, null);
         int x = WIDTH/2 - (spacing * (5 - 1) + cardWidth)/2;
         paint.setColor(Color.RED);
         for(int i = 0; i < cards.size(); i++){

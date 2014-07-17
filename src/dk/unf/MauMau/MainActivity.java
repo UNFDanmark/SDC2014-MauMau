@@ -19,6 +19,7 @@ public class MainActivity extends Activity {
 
     public static String ip;
     public static int HEIGHT;
+    public static int WIDTH;
 
     /**
      * Called when the activity is first created.
@@ -31,6 +32,7 @@ public class MainActivity extends Activity {
         Point size = new Point();
         display.getSize(size);
         HEIGHT = size.y;
+        WIDTH = size.x;
         canvasManager = new CanvasManager(this);
         canvasManager.init(getApplicationContext());
         setContentView(canvasManager);
