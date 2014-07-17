@@ -61,8 +61,6 @@ public class GameRender implements UIState, NetListener {
         } else {
             serverIP = Settings.getServerIP();
         }
-        serverIP = "192.168.43.146";
-
 
         client = new Client();
         client.addListener(this);
