@@ -1,8 +1,13 @@
 package dk.unf.MauMau.ui;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.widget.EditText;
 import dk.unf.MauMau.CanvasManager;
 import dk.unf.MauMau.MainActivity;
+import dk.unf.MauMau.Settings;
 
 import java.util.ArrayList;
 
@@ -23,20 +28,20 @@ public class JoinMenu implements UIState {
     AssetLoader loader;
     CanvasManager manager;
 
-
-
     public JoinMenu() {
         //All construction code in init()
     }
 
     @Override
     public void onEnter() {
-
+        manager.showTextEdits();
+        manager.invalidate();
     }
 
     @Override
     public void onLeave() {
-
+        manager.hideTextEdits();
+        manager.invalidate();
     }
 
     @Override
@@ -49,16 +54,23 @@ public class JoinMenu implements UIState {
     }
 
     @Override
-    public void init(CanvasManager manager) {
+    public void init(final CanvasManager manager) {
         this.manager = manager;
         loader = manager.getLoader();
         startButton = new Button("Start game",WIDTH/2 - BUTTON_WIDTH/2, HEIGHT-BOTTOM_MARGIN , BUTTON_WIDTH, BUTTON_HEIGHT);
+        startButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(Element element) {
+                manager.saveTextEdits();
+                manager.gotoState(CanvasManager.GAME_STATE);
+            }
+        });
+
     }
 
     @Override
     public void draw(Canvas canvas) {
         canvas.drawBitmap(loader.getBackground(HEIGHT, WIDTH, 1),0,0,null);
-
         startButton.draw(canvas);
     }
 
