@@ -93,28 +93,33 @@ public class GameRender implements UIState, NetListener {
 
     @Override
     public void onInputEvent(InputEvent event) {
-        if (Settings.getRunningHost() && !gameRunning) {
-            Log.i("Mau", "Starting game");
-            client.send(new PkgStartGame());
-            Log.i("Mau","Told server to start");
-            gameRunning = true;
-            gameStarting = true;
+        if (event.type == InputEvent.DOWN_EVENT) {
+            if (Settings.getRunningHost() && !gameRunning) {
+                Log.i("Mau", "Starting game");
+                client.send(new PkgStartGame());
+                Log.i("Mau","Told server to start");
+                gameRunning = true;
+                gameStarting = true;
+            }
+
+            if (gameRunning && currentPlayersTurn == yourId) {
+                checkClick(event);
+            }
+            canvasManager.invalidate();
         }
 
-        if (gameRunning && currentPlayersTurn == yourId) {
-            checkClick(event);
-        }
-
-        canvasManager.invalidate();
     }
 
     public void checkClick(InputEvent event) {
-        for(int i = cards.size(); i > 0; i--){
-            int a = i*spacing+margin;
-            if (event.x > (a - cardWidth) && event.x < a && event.y > (HEIGHT-400) && event.y < (HEIGHT-400) + 200) {
-                client.send(new PkgThrowCard(cards.get(i-1).toCard()));
-                cards.remove(cards.get(i-1));
-                return;
+        if (yourTurn) {
+            for(int i = cards.size(); i > 0; i--){
+                int a = i*spacing+margin;
+                if (event.x > (a - cardWidth) && event.x < a && event.y > (HEIGHT-400) && event.y < (HEIGHT-400) + 200) {
+                    client.send(new PkgThrowCard(cards.get(i-1).toCard()));
+                    cards.remove(cards.get(i-1));
+                    yourTurn = false;
+                    return;
+                }
             }
         }
     }
@@ -139,7 +144,12 @@ public class GameRender implements UIState, NetListener {
             String text = "Game starting...";
             Rect bounds = new Rect();
             textPaint.getTextBounds(text,0,text.length(),bounds);
-            canvas.drawText(text,WIDTH/2 - bounds.width()/2,500,textPaint);
+            canvas.drawText(text,WIDTH/2 - bounds.width()/2,HEIGHT/2,textPaint);
+        } else if (yourTurn) {
+            String text = "Your turn";
+            Rect bounds = new Rect();
+            textPaint.getTextBounds(text,0,text.length(),bounds);
+            canvas.drawText(text,WIDTH/2 - bounds.width()/2,HEIGHT/2,textPaint);
         }
 
         for (int i = 0; i < players.size(); i++) {
