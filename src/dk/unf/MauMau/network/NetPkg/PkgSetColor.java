@@ -5,13 +5,23 @@ package dk.unf.MauMau.network.NetPkg;
  */
 public class PkgSetColor implements NetPkg{
 
+    public final int color;
+
+    public PkgSetColor(int color) {
+        this.color = color;
+    }
+
+    public PkgSetColor(String input) {
+        color = Integer.parseInt(input);
+    }
+
     @Override
     public int getType() {
-        return 0;
+        return NetPkg.PKG_SET_COLOR;
     }
 
     @Override
     public String serialize() {
-        return null;
+        return "" + getType() + color;
     }
 }

@@ -30,7 +30,9 @@ public class GameRender implements UIState, NetListener {
     private CanvasManager canvasManager;
     private boolean gameRunning = false;
     private boolean gameStarting = false;
+
     private boolean suitSelect = false;
+    private int jackCache = -1;
 
     Client client;
     Paint cardPaint = new Paint();
@@ -90,7 +92,6 @@ public class GameRender implements UIState, NetListener {
         clientThread.setName("ClientSocketTickerThread");
         clientThread.start();
 
-        margin = WIDTH / 2 - (spacing * (5 - 1) + cardWidth) / 2;
     }
 
     @Override
@@ -121,25 +122,37 @@ public class GameRender implements UIState, NetListener {
 
     public void checkClick(InputEvent event) {
         if (suitSelect) {
+            int newSuit = 0;
             if (event.x < WIDTH / 2 && event.y < HEIGHT / 2) { //clubs
-
+                newSuit = AssetLoader.CLUBS_ID;
             } else if (event.x > WIDTH / 2 && event.y < HEIGHT / 2) { //hearts
-
+                newSuit = AssetLoader.HEARTS_ID;
             } else if (event.x < WIDTH / 2 && event.y > HEIGHT / 2) { //diamonds
-
+                newSuit = AssetLoader.DIAMONDS_ID;
             } else if (event.x > WIDTH / 2 && event.y > HEIGHT / 2) { //spades
-
+                newSuit = AssetLoader.SPADES_ID;
             }
+            client.send(new PkgThrowCard(cards.get(jackCache).toCard()));
+            client.send(new PkgSetColor(newSuit));
+            cards.remove(cards.get(jackCache));
+            suitSelect = false;
         } else {
             if (yourTurn) {
                 for (int i = cards.size(); i > 0; i--) {
                     int a = i * spacing + margin;
                     if (event.x > (a - cardWidth) && event.x < a && event.y > (HEIGHT - 400) && event.y < (HEIGHT - 400) + 200) {
                         if (allowedThrows.contains(cards.get(i - 1))) {
-                            client.send(new PkgThrowCard(cards.get(i - 1).toCard()));
-                            cards.remove(cards.get(i - 1));
-                            yourTurn = false;
-                            return;
+                            if (cards.get(i-1).cardValue == 11) {
+                                jackCache = i-1;
+                                suitSelect = true;
+                                yourTurn = false;
+                                return;
+                            } else {
+                                client.send(new PkgThrowCard(cards.get(i - 1).toCard()));
+                                cards.remove(cards.get(i - 1));
+                                yourTurn = false;
+                                return;
+                            }
                         }
                     }
                 }
@@ -148,6 +161,9 @@ public class GameRender implements UIState, NetListener {
     }
 
     public void draw(Canvas canvas) {
+
+        margin = WIDTH / 2 - (spacing * (cards.size() - 1) + cardWidth) / 2;
+
         canvas.drawBitmap(loader.getBackground(HEIGHT, WIDTH, 0), 0, 0, null);
         cardPaint.setColor(Color.RED);
         for (int i = 0; i < cards.size(); i++) {
@@ -179,10 +195,8 @@ public class GameRender implements UIState, NetListener {
         for (int i = 0; i < players.size(); i++) {
             canvas.drawText(players.get(i).getNick() + ": " + players.get(i).getId(), 50, i * 50 + 200, textPaint);
         }
-        if(playedCards.size() > 0 && playedCards.get(playedCards.size()-1).cardValue == 11){
-            suitSelect = true;
+        if(suitSelect) {
             drawJack(canvas);
-
         }
 
     }
@@ -234,6 +248,8 @@ public class GameRender implements UIState, NetListener {
         Log.i("Mau", "Now player " + currentPlayersTurn + "s turn");
         if (currentPlayersTurn == yourId) {
             yourTurn = true;
+        } else {
+            yourTurn = false;
         }
     }
 

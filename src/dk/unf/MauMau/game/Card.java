@@ -18,7 +18,11 @@ public class Card {
     public boolean equals(Object o) {
         if (o instanceof Card) {
             Card c = (Card) o;
-            return (c.cardValue == cardValue && c.color == color);
+            if (c.color == -1) {
+                return (c.cardValue == cardValue);
+            } else {
+                return (c.cardValue == cardValue && c.color == color);
+            }
         } else {
             return false;
         }

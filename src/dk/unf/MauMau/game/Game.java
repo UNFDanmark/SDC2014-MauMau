@@ -39,8 +39,8 @@ public class Game implements Runnable, NetListener {
         serverThread.setName("ServerAcceptThread");
         serverThread.start();
 
-        for (int i = 6; i < 13; i++) {
-            for (int j = 0; j < 3; j++) {
+        for (int i = 6; i < 14; i++) {
+            for (int j = 0; j < 4; j++) {
                 deck.add(new Card(i, j));
             }
         }
@@ -111,6 +111,22 @@ public class Game implements Runnable, NetListener {
                     throwCard(nPkg.card);
                 } else if (pkg.getType() == NetPkg.PKG_START_GAME) {
                     startGame();
+                } else if (pkg.getType() == NetPkg.PKG_SET_COLOR) {
+                    playedCard = new Card(playedCard.cardValue,((PkgSetColor)pkg).color);
+                    for (Player player : players) {
+                        server.sendPkg(new PkgFaceCard(playedCard,currentPlayer),player.getId());
+                    }
+                    ArrayList<Card> throwables = throwableCards(players.get(currentPlayer));
+                    if(throwables.size() == 0) {
+                        while((throwables = throwableCards(players.get(currentPlayer))).size() == 0){
+                            giveCards(players.get(currentPlayer), 1);
+                            nextTurn();
+                        }
+                        for (Player player : players) {
+                            server.sendPkg(new PkgNextTurn(currentPlayer),player.getId());
+                        }
+                    }
+                    server.sendPkg(new PkgAllowedThrows(throwables),players.get(currentPlayer).getId());
                 }
             }
 
@@ -137,13 +153,12 @@ public class Game implements Runnable, NetListener {
 
 
     private void throwCard(Card card) {
-        if(playedCard.cardValue == 9 && Settings.usesCustomRules()) {
-            reversed = true;
-        }
+        specialCards(card);
+
+        playedCard = card;
+
         nextTurn();
-        if(playedCard.cardValue != 10 && !Settings.usesCustomRules()) {
-            playedCard = card;
-        }
+
         for (Player player : players) {
             server.sendPkg(new PkgFaceCard(card, currentPlayer), player.getId());
         }
@@ -161,25 +176,53 @@ public class Game implements Runnable, NetListener {
     }
 
     private void specialCards (Card card){
-        if(playedCard.cardValue == 7 && throwableCards(players.get(currentPlayer)).size() > 0){
-            giveCards(players.get(currentPlayer), 2);
+        if(card.cardValue == 7 && !playerHasValue(players.get(getNextPlayer()),7)){
+            giveCards(players.get(getNextPlayer()), 2);
             nextTurn();
-        }else if(playedCard.cardValue == 8 && throwableCards(players.get(currentPlayer)).size() > 0){
+        }else if(card.cardValue == 8 && !playerHasValue(players.get(getNextPlayer()),8)){
             nextTurn();
+        } else if(playedCard.cardValue == 9 && Settings.usesCustomRules()) {
+            reversed = true;
         }
+    }
+
+    private boolean playerHasValue(Player player, int value) {
+        for (Card card : player.cards) {
+            if (card.cardValue == value) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private ArrayList<Card> throwableCards(Player player) {
         ArrayList<Card> throwableCards = new ArrayList<Card>();
         for (int i = 0; i < player.cards.size(); i++) {
             if (playedCard.cardValue == player.cards.get(i).cardValue ||
-                    playedCard.color == player.cards.get(i).color ||
-                    (playedCard.cardValue != 11 && player.cards.get(i).cardValue == 11)) {
-
+                    playedCard.color == player.cards.get(i).color) {
+                if (playedCard.cardValue == 11 && player.cards.get(i).cardValue == 11) {
+                    continue;
+                }
                 throwableCards.add(player.cards.get(i));
             }
         }
         return throwableCards;
+    }
+
+    private int getNextPlayer() {
+        if (!reversed) {
+            if (currentPlayer == players.size() - 1) {
+                return 0;
+            } else {
+                return currentPlayer+1;
+            }
+        } else {
+            if (currentPlayer == 0) {
+                return players.size() - 1;
+            } else {
+                return currentPlayer;
+            }
+        }
     }
 
     private int nextTurn() {
@@ -194,7 +237,7 @@ public class Game implements Runnable, NetListener {
         } else {
             if (currentPlayer == 0) {
                 currentPlayer = players.size() - 1;
-                return 0;
+                return players.size() - 1;
             } else {
                 currentPlayer--;
                 return currentPlayer;
@@ -209,7 +252,17 @@ public class Game implements Runnable, NetListener {
             giveCards(player, 5);
             server.sendPkg(new PkgFaceCard(playedCard, players.get(0).getId()), player.getId());
         }
-        server.sendPkg(new PkgAllowedThrows(throwableCards(players.get(currentPlayer))),players.get(currentPlayer).getId());
+        ArrayList<Card> throwables = throwableCards(players.get(currentPlayer));
+        if(throwables.size() == 0) {
+            while((throwables = throwableCards(players.get(currentPlayer))).size() == 0){
+                giveCards(players.get(currentPlayer), 1);
+                nextTurn();
+            }
+            for (Player player : players) {
+                server.sendPkg(new PkgNextTurn(currentPlayer),player.getId());
+            }
+        }
+        server.sendPkg(new PkgAllowedThrows(throwables),players.get(currentPlayer).getId());
     }
 
     public synchronized void stopGame() {

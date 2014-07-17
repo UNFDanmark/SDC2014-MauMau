@@ -42,7 +42,7 @@ public class AssetLoader {
         Loads all the image cards by using the method
         getBitmapFromAsset. The naming convention is c<cardValue><cardColor>
          */
-        for (int j = 6; j < 13; j++) {
+        for (int j = 6; j < 14; j++) {
             for (int k = 0; k < 4; k++) {
                 Bitmap bitmap = getBitmapFromAsset(context,  "c" + j + getLetter(k)+".png");
                 System.out.println("c" + j + getLetter(k)+".png");
