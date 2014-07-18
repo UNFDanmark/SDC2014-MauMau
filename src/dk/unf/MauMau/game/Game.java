@@ -155,6 +155,7 @@ public class Game implements Runnable, NetListener {
     private void throwCard(Card card) {
         specialCards(card);
 
+        deck.add(playedCard);
         playedCard = card;
 
         nextTurn();

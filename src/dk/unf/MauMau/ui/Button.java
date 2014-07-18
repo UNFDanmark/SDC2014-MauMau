@@ -23,6 +23,9 @@ public class Button extends Element {
         paint = new Paint();
         paint.setColor(Color.WHITE);
         paint.setTextSize(42);
+//        paint.setStrokeWidth(2);
+//        paint.setStyle(Paint.Style.STROKE);
+        this.x = MainActivity.WIDTH/2 - getTextWidth()/2;
     }
 
     public Button(String text, int y, int height) {
@@ -48,7 +51,9 @@ public class Button extends Element {
     }
 
     public void draw(Canvas canvas) {
-        canvas.drawText(text, MainActivity.WIDTH/2,y + getTextHeight(),paint);
+        canvas.drawText(text, x,y + getTextHeight(),paint);
+//        canvas.drawRect(x,y,x+width,y+height,paint);
+        //I know this is fucked but i don't care. i do what i want
     }
 
     public void setOnClickListener(OnClickListener listener) {

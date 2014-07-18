@@ -15,10 +15,10 @@ public class MainMenu implements UIState {
     private static final int WIDTH = MainActivity.WIDTH;
     private static final int HEIGHT = MainActivity.HEIGHT;
 
-    private static final int BUTTON_WIDTH = 400;
+    private static final int BUTTON_WIDTH = 250;
     private static final int BUTTON_HEIGHT = 100;
 
-    private static final int TOP_MARGIN = 50;
+    private static final int TOP_MARGIN = 300;
     private static final int SPACING = 200;
 
     ArrayList<Button> buttons = new ArrayList<Button>();
@@ -54,14 +54,7 @@ public class MainMenu implements UIState {
             }
         }));
 
-        buttons.add(spawnButton("Settings", 2, new OnClickListener() {
-            @Override
-            public void onClick(Element element) {
-                Log.i("Mau", "Clicked on Settings");
-            }
-        }));
-
-        buttons.add(spawnButton("Quit", 3, new OnClickListener() {
+        buttons.add(spawnButton("Quit", 2, new OnClickListener() {
             @Override
             public void onClick(Element element) {
                 Log.i("Mau", "Clicked on Quit");
