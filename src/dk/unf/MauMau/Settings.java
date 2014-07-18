@@ -7,6 +7,7 @@ public class Settings {
 
     private static volatile String ip;
     private static volatile String serverIP;
+    private static volatile String nick = "Host";
     private static volatile boolean customRules = false;
     private static volatile boolean runningHost = false;
 
@@ -40,5 +41,13 @@ public class Settings {
 
     public static synchronized void setCustomRules(boolean customRules) {
         Settings.customRules = customRules;
+    }
+
+    public static synchronized String getNick() {
+        return nick;
+    }
+
+    public static synchronized void setNick(String nick) {
+        Settings.nick = nick;
     }
 }

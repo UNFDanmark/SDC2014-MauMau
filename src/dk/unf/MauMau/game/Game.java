@@ -128,6 +128,7 @@ public class Game implements Runnable, NetListener {
                     }
                     server.sendPkg(new PkgAllowedThrows(throwables),players.get(currentPlayer).getId());
                 }
+
             }
 
             try {
@@ -153,6 +154,13 @@ public class Game implements Runnable, NetListener {
 
 
     private void throwCard(Card card) {
+
+        if (players.get(currentPlayer).cards.size() == 0) {
+            for (Player recv : players) {
+                server.sendPkg(new PkgWon(currentPlayer),recv.getId());
+            }
+        }
+
         specialCards(card);
 
         deck.add(playedCard);
@@ -174,6 +182,7 @@ public class Game implements Runnable, NetListener {
             }
         }
         server.sendPkg(new PkgAllowedThrows(throwables),players.get(currentPlayer).getId());
+
     }
 
     private void specialCards (Card card){

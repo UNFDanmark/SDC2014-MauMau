@@ -98,6 +98,7 @@ public class CanvasManager extends View {
 
     public void saveTextEdits() {
         Settings.setServerIP(mainActivity.getIpField().getText().toString().trim());
+        Settings.setNick(mainActivity.getNickField().getText().toString().trim());
     }
 
 }

@@ -17,6 +17,7 @@ public interface NetPkg {
     public static final int PKG_START_GAME = 9;
     public static final int PKG_MAU_MAU_SHAKE = 10;
     public static final int PKG_SET_COLOR = 11;
+    public static final int PKG_WON = 12;
 
     public int getType();
 
