@@ -34,6 +34,8 @@ public class GameRender implements UIState, NetListener {
     private boolean suitSelect = false;
     private int jackCache = -1;
 
+    private int winner = -1;
+
     Client client;
     Paint cardPaint = new Paint();
     Paint textPaint = new Paint();
@@ -111,7 +113,7 @@ public class GameRender implements UIState, NetListener {
                 gameStarting = true;
             }
 
-            if (gameRunning && currentPlayersTurn == yourId) {
+            if (gameRunning && currentPlayersTurn == yourId && winner == -1) {
                 checkClick(event);
             }
             canvasManager.invalidate();
@@ -140,7 +142,8 @@ public class GameRender implements UIState, NetListener {
             if (yourTurn) {
                 for (int i = cards.size(); i > 0; i--) {
                     int a = i * spacing + margin;
-                    if (event.x > (a - cardWidth) && event.x < a && event.y > (HEIGHT - 400) && event.y < (HEIGHT - 400) + 200) {
+                    if (event.x
+ > (a - cardWidth) && event.x < a && event.y > (HEIGHT - 400) && event.y < (HEIGHT - 400) + 200) {
                         if (allowedThrows.contains(cards.get(i - 1))) {
                             if (cards.get(i-1).cardValue == 11) {
                                 jackCache = i-1;
@@ -161,6 +164,7 @@ public class GameRender implements UIState, NetListener {
     }
 
     public void draw(Canvas canvas) {
+
 
         margin = WIDTH / 2 - (spacing * (cards.size() - 1) + cardWidth) / 2;
 
@@ -188,6 +192,21 @@ public class GameRender implements UIState, NetListener {
             String text = "Your turn";
             Rect bounds = new Rect();
 
+            textPaint.getTextBounds(text, 0, text.length(), bounds);
+            canvas.drawText(text, WIDTH / 2 - bounds.width() / 2, HEIGHT / 2, textPaint);
+        } else if (!gameRunning) {
+            String text = "IP: " + Settings.getIP();
+            Rect bounds = new Rect();
+            textPaint.getTextBounds(text, 0, text.length(), bounds);
+            canvas.drawText(text, WIDTH / 2 - bounds.width() / 2, HEIGHT / 2, textPaint);
+        } else if (!gameRunning) {
+            String text = "IP: " + Settings.getIP();
+            Rect bounds = new Rect();
+            textPaint.getTextBounds(text, 0, text.length(), bounds);
+            canvas.drawText(text, WIDTH / 2 - bounds.width() / 2, HEIGHT / 2, textPaint);
+        } else if (winner != -1) {
+            String text = "Player " + players.get(winner).getNick() + " has won!" + Settings.getIP();
+            Rect bounds = new Rect();
             textPaint.getTextBounds(text, 0, text.length(), bounds);
             canvas.drawText(text, WIDTH / 2 - bounds.width() / 2, HEIGHT / 2, textPaint);
         }
@@ -224,7 +243,7 @@ public class GameRender implements UIState, NetListener {
                 nextTurn(((PkgNextTurn) data).playerId);
                 break;
             case NetPkg.PKG_HANDSHAKE:
-                if (!gameRunning) client.send(new PkgConnect("Player", -1));
+                if (!gameRunning) client.send(new PkgConnect(Settings.getNick(), -1));
                 break;
             case NetPkg.PKG_START_GAME:
                 gameRunning = true;
@@ -235,6 +254,9 @@ public class GameRender implements UIState, NetListener {
                 break;
             case NetPkg.PKG_ALLOWED_THROWS:
                 allowedThrows = ((PkgAllowedThrows)data).toElementArrayList();
+                break;
+            case NetPkg.PKG_WON:
+                winner = ((PkgWon)data).playerid;
                 break;
             default:
                 Log.i("Mau", "Client received unknown package of type: " + data.getType());
