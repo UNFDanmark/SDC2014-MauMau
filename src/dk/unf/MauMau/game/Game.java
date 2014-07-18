@@ -200,7 +200,8 @@ public class Game implements Runnable, NetListener {
         ArrayList<Card> throwableCards = new ArrayList<Card>();
         for (int i = 0; i < player.cards.size(); i++) {
             if (playedCard.cardValue == player.cards.get(i).cardValue ||
-                    playedCard.color == player.cards.get(i).color) {
+                    playedCard.color == player.cards.get(i).color ||
+                    player.cards.get(i).cardValue == 11) {
                 if (playedCard.cardValue == 11 && player.cards.get(i).cardValue == 11) {
                     continue;
                 }
