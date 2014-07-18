@@ -183,7 +183,12 @@ public class GameRender implements UIState, NetListener {
             canvas.drawBitmap(card, WIDTH / 2 - card.getWidth() / 2, 320, null);
         }
 
-        if (gameStarting) {
+        if (winner != -1) {
+            String text = "Player " + players.get(winner).getNick() + " has won!" + Settings.getIP();
+            Rect bounds = new Rect();
+            textPaint.getTextBounds(text, 0, text.length(), bounds);
+            canvas.drawText(text, WIDTH / 2 - bounds.width() / 2, HEIGHT / 2, textPaint);
+        } else if (gameStarting) {
             String text = "Game starting...";
             Rect bounds = new Rect();
             textPaint.getTextBounds(text, 0, text.length(), bounds);
@@ -204,15 +209,10 @@ public class GameRender implements UIState, NetListener {
             Rect bounds = new Rect();
             textPaint.getTextBounds(text, 0, text.length(), bounds);
             canvas.drawText(text, WIDTH / 2 - bounds.width() / 2, HEIGHT / 2, textPaint);
-        } else if (winner != -1) {
-            String text = "Player " + players.get(winner).getNick() + " has won!" + Settings.getIP();
-            Rect bounds = new Rect();
-            textPaint.getTextBounds(text, 0, text.length(), bounds);
-            canvas.drawText(text, WIDTH / 2 - bounds.width() / 2, HEIGHT / 2, textPaint);
         }
 
         for (int i = 0; i < players.size(); i++) {
-            canvas.drawText(players.get(i).getNick() + ": " + players.get(i).getId(), 50, i * 50 + 200, textPaint);
+            canvas.drawText(players.get(i).getNick(), 50, i * 50 + 200, textPaint);
         }
         if(suitSelect) {
             drawJack(canvas);
@@ -278,6 +278,7 @@ public class GameRender implements UIState, NetListener {
     private void addPlayer(PkgConnect data) {
         if (data.nickname.equalsIgnoreCase("#")) {
             yourId = data.id;
+            players.add(new PlayerInfo(yourId,Settings.getNick()));
         } else {
             players.add(new PlayerInfo(data.id, data.nickname));
         }
