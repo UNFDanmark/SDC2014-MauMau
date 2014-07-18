@@ -127,6 +127,7 @@ public class Server implements Runnable {
                 case NetPkg.PKG_START_GAME: return new PkgStartGame();
                 case NetPkg.PKG_THROW_CARD: return new PkgThrowCard(data.substring(2));
                 case NetPkg.PKG_SET_COLOR: return new PkgSetColor(data.substring(2));
+                case NetPkg.PKG_MAU_MAU_SHAKE: return new PkgMauMauShake(data.substring(2));
                 //case NetPkg.PKG_DISCONNECT: return new PkgDisconnect(data.substring(2));
                 default: Log.e("Mau","Package type " + type + " not implemented yet...");
             }

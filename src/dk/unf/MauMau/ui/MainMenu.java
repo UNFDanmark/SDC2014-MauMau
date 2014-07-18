@@ -58,6 +58,7 @@ public class MainMenu implements UIState {
             @Override
             public void onClick(Element element) {
                 Log.i("Mau", "Clicked on Quit");
+                MainActivity.brutallyMurderMe();
             }
         }));
     }

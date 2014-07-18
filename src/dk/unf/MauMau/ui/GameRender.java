@@ -2,6 +2,7 @@ package dk.unf.MauMau.ui;
 
 import android.content.Context;
 import android.graphics.*;
+import android.hardware.SensorManager;
 import android.os.Vibrator;
 import android.util.Log;
 import dk.unf.MauMau.CanvasManager;
@@ -16,6 +17,7 @@ import dk.unf.MauMau.network.NetPkg.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by sdc on 7/16/14.
@@ -35,6 +37,8 @@ public class GameRender implements UIState, NetListener {
     private int jackCache = -1;
 
     private int winner = -1;
+
+    private boolean shakeDetected = false;
 
     Client client;
     Paint cardPaint = new Paint();
@@ -116,6 +120,9 @@ public class GameRender implements UIState, NetListener {
             if (gameRunning && currentPlayersTurn == yourId && winner == -1) {
                 checkClick(event);
             }
+            if (winner != -1) {
+                MainActivity.brutallyMurderMe();
+            }
             canvasManager.invalidate();
         }
 
@@ -145,17 +152,20 @@ public class GameRender implements UIState, NetListener {
                     if (event.x
  > (a - cardWidth) && event.x < a && event.y > (HEIGHT - 400) && event.y < (HEIGHT - 400) + 200) {
                         if (allowedThrows.contains(cards.get(i - 1))) {
+                            if (cards.size() == 2) {
+                                client.send(new PkgMauMauShake(Settings.getShake()));
+                            }
                             if (cards.get(i-1).cardValue == 11) {
                                 jackCache = i-1;
                                 suitSelect = true;
                                 yourTurn = false;
-                                return;
                             } else {
                                 client.send(new PkgThrowCard(cards.get(i - 1).toCard()));
                                 cards.remove(cards.get(i - 1));
                                 yourTurn = false;
-                                return;
                             }
+                            Settings.setShake(false);
+                            return;
                         }
                     }
                 }
@@ -200,15 +210,14 @@ public class GameRender implements UIState, NetListener {
             textPaint.getTextBounds(text, 0, text.length(), bounds);
             canvas.drawText(text, WIDTH / 2 - bounds.width() / 2, HEIGHT / 2, textPaint);
         } else if (!gameRunning) {
-            String text = "IP: " + Settings.getIP();
-            Rect bounds = new Rect();
-            textPaint.getTextBounds(text, 0, text.length(), bounds);
-            canvas.drawText(text, WIDTH / 2 - bounds.width() / 2, HEIGHT / 2, textPaint);
-        } else if (!gameRunning) {
-            String text = "IP: " + Settings.getIP();
-            Rect bounds = new Rect();
-            textPaint.getTextBounds(text, 0, text.length(), bounds);
-            canvas.drawText(text, WIDTH / 2 - bounds.width() / 2, HEIGHT / 2, textPaint);
+            String text1 = "IP: " + Settings.getIP();
+            String text2 = "To start press anywhere";
+            Rect bounds1 = new Rect();
+            Rect bounds2 = new Rect();
+            textPaint.getTextBounds(text1, 0, text1.length(), bounds1);
+            textPaint.getTextBounds(text2, 0, text2.length(), bounds2);
+            canvas.drawText(text1, WIDTH / 2 - bounds1.width() / 2, HEIGHT / 2, textPaint);
+            canvas.drawText(text2, WIDTH / 2 - bounds2.width() / 2, HEIGHT / 2 + 100, textPaint);
         }
 
         for (int i = 0; i < players.size(); i++) {

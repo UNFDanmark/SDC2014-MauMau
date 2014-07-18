@@ -24,6 +24,8 @@ public class Game implements Runnable, NetListener {
     Queue<Player> playerQueue = new PriorityQueue<Player>();
     private boolean reversed;
 
+    private int sevenAcc = 0;
+
 
     private int nextPlayerID = 0;
     private int currentPlayer = 0;
@@ -127,6 +129,10 @@ public class Game implements Runnable, NetListener {
                         }
                     }
                     server.sendPkg(new PkgAllowedThrows(throwables),players.get(currentPlayer).getId());
+                } else if (pkg.getType() == NetPkg.PKG_MAU_MAU_SHAKE) {
+                    if(!((PkgMauMauShake)pkg).succeeded) {
+                        giveCards(players.get(currentPlayer),3);
+                    }
                 }
 
             }
@@ -165,8 +171,10 @@ public class Game implements Runnable, NetListener {
 
         deck.add(playedCard);
         playedCard = card;
-
         nextTurn();
+        if (card.cardValue == 11) {
+            return;
+        }
 
         for (Player player : players) {
             server.sendPkg(new PkgFaceCard(card, currentPlayer), player.getId());
@@ -186,8 +194,12 @@ public class Game implements Runnable, NetListener {
     }
 
     private void specialCards (Card card){
+        if (card.cardValue == 7) {
+            sevenAcc++;
+        }
         if(card.cardValue == 7 && !playerHasValue(players.get(getNextPlayer()),7)){
-            giveCards(players.get(getNextPlayer()), 2);
+            giveCards(players.get(getNextPlayer()), 2*sevenAcc);
+            sevenAcc = 0;
             nextTurn();
         }else if(card.cardValue == 8 && !playerHasValue(players.get(getNextPlayer()),8)){
             nextTurn();

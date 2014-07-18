@@ -5,13 +5,23 @@ package dk.unf.MauMau.network.NetPkg;
  */
 public class PkgMauMauShake implements NetPkg {
 
+    public final boolean succeeded;
+
+    public PkgMauMauShake(boolean succeeded) {
+        this.succeeded = succeeded;
+    }
+
+    public PkgMauMauShake(String input) {
+        succeeded = Boolean.parseBoolean(input);
+    }
+
     @Override
     public int getType() {
-        return 0;
+        return PKG_MAU_MAU_SHAKE;
     }
 
     @Override
     public String serialize() {
-        return null;
+        return getType() + Boolean.toString(succeeded);
     }
 }

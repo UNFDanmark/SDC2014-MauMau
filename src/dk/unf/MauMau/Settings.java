@@ -10,6 +10,7 @@ public class Settings {
     private static volatile String nick = "Host";
     private static volatile boolean customRules = false;
     private static volatile boolean runningHost = false;
+    private static volatile boolean shakeDetected = false;
 
     public static synchronized String getIP() {
         return ip;
@@ -49,5 +50,13 @@ public class Settings {
 
     public static synchronized void setNick(String nick) {
         Settings.nick = nick;
+    }
+
+    public static synchronized boolean getShake() {
+        return shakeDetected;
+    }
+
+    public static synchronized void setShake(boolean shake) {
+        shakeDetected = shake;
     }
 }
