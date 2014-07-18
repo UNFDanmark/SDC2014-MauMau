@@ -194,7 +194,7 @@ public class GameRender implements UIState, NetListener {
         }
 
         if (winner != -1) {
-            String text = "Player " + players.get(winner).getNick() + " has won!" + Settings.getIP();
+            String text = "Player " + players.get(winner).getNick() + " has won!";
             Rect bounds = new Rect();
             textPaint.getTextBounds(text, 0, text.length(), bounds);
             canvas.drawText(text, WIDTH / 2 - bounds.width() / 2, HEIGHT / 2, textPaint);
